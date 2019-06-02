@@ -18,7 +18,7 @@ int height = 0;
 int main()
 {
 	LaserCtrlor lz_ctrl(8);
-	//ZhenjingControlor zj_ctrl(4);
+	ZhenjingControlor zj_ctrl(5);
 	VideoCapture capture(2);
 	
 	// 通过下面两行设置像素分辨率, 设定值如果超过
@@ -35,11 +35,11 @@ int main()
 		vector<Point2d> points;
 		// TODO light up laser
 		lz_ctrl.laser_on();
-		waitKey(500);
+		Sleep(500);
 		capture >> frame;
 		// TODO turn off laser
 		lz_ctrl.laser_off();
-		waitKey(500);
+		Sleep(500);
 		capture >> frame_dark;
 		if (flag == 0) {
 			flag = 1;
@@ -50,10 +50,13 @@ int main()
 		//遍历边缘
 		if (points.size() == 1) {
 			// measure
-			double d;
+			double d3[3];
 			//画出所选区域
 			cv::circle(frame, points[0], 5, Scalar(0, 255, 0));
 			cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+			// calc xyz
+			zmeasure(points[0].x, points[0].y, zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 15, 1000, d3, 3);
+			printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 		}
 		//test_point(frame);
 		// draw cross
@@ -62,7 +65,7 @@ int main()
 		imshow("读取视频", frame);
 		key = waitKey(1);	//延时30
 		if (key != -1) {
-			//zj_ctrl.zhenjing_control(key);
+			zj_ctrl.zhenjing_control(key);
 		}
 	}
 	destroyAllWindows();

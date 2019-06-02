@@ -26,41 +26,26 @@ double measuref(double x, double y,double c, double L, double ar) {
 	return f;
 }
 
-double zxmeasure(double x, double bx, double L, double bi)
+
+
+//double *zmeasure(double x,double y,double bx,double by,double L,double bi,double z[3])
+void zmeasure(double x, double y, double bx, double by, double L, double bi, double* a, int n)
 {
-	double qx, zx;
+	double tanbeta, qx, qy, l, tanafa, zsum, zx, zy, zz;
+	double z[3];
 	qx = bx * pi / 180;
-	if (x == 0)
-	{
-		zx = L * tan(qx);
-	}
-	else if (bx == 0)
-	{
-		zx = bi * L / x;
-	}
-	else
-	{
-		zx = L / (x / bi + 1 / tan(qx));
-	}
+	qy = by * pi / 180;
+	l = sqrt(x * x + y * y);
+	tanbeta = 1 / (cos(qy) + tan(qx));
+	tanafa = bi / l;
+	zsum = L / (1 / tanbeta + 1 / tanafa);
+	zx = zsum / tanafa;
+	zy = zsum * cos(by);
+	zz = zsum * sin(by);
+	z[0] = zx;
+	z[1] = zy;
+	z[2] = zz;
 
-	return zx;
-}
-
-double zymeasure(double y, double by, double L, double bi)
-{
-	double qy, zy;
-	qy = by / 180 * pi;
-	if (y == 0)
-	{
-		zy = L * tan(qy);
-	}
-	else if (by == 0)
-	{
-		zy = bi * L / y;
-	}
-	else
-	{
-		zy = L / (y / bi + 1 / tan(qy));
-	}
-	return zy;
+	for (int i = 0; i < n; i++)
+		a[i] = z[i];
 }

@@ -2,6 +2,5 @@
 #ifndef TRIANGLE_H
 double triangle(double x, double y, double ar, double c, double f);
 double measuref(double x, double y, double c, double L, double ar);
-double zymeasure(double y, double by, double L, double bi);
-double zxmeasure(double x, double bx, double L, double bi);
+void zmeasure(double x, double y, double bx, double by, double L, double bi, double* a, int n);
 #endif // !TRIANGLE_H
