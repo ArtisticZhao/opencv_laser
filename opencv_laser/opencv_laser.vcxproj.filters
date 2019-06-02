@@ -19,7 +19,16 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="triangle.h">
-      <Filter>源文件</Filter>
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="my_point_detector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="zhenjing_control.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CSerialPort.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +39,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="triangle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="my_point_detector.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="zhenjing_control.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CSerialPort.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

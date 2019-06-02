@@ -5,7 +5,9 @@
 #include <opencv2/opencv.hpp>
 #include <core/types.hpp>
 
+#include "zhenjing_control.h"
 #include "point_detector.h"
+#include "my_point_detector.h"
 #include "triangle.h"
 void test_point(Mat &origin);
 static void on_mouse(int event, int x, int y, int flags, void* ustc);
@@ -15,29 +17,38 @@ int width = 0;
 int height = 0;
 int main()
 {
-	VideoCapture capture(2);
+	ZhenjingControlor zj_ctrl(1);
+	VideoCapture capture(1);
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
-	namedWindow("读取视频", 1);
+	namedWindow("读取视频", 0);
 	int key = 0;
 	setMouseCallback("读取视频", on_mouse, NULL);
 	int flag = 0;
 	while (key != 'q')
 	{
 		Mat frame;
+		Mat frame_dark;
+		// TODO light up laser
 		capture >> frame;
+		// TODO turn off laser
+		capture >> frame_dark;
 		if (flag == 0) {
 			flag = 1;
 			width = frame.size().width;
 			height = frame.size().height;
 		}
-		test_point(frame);
+		get_point(frame, frame_dark);
+		//test_point(frame);
 		// draw cross
 		line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
 		line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
 		imshow("读取视频", frame);
 		key = waitKey(1);	//延时30
+		if (key != -1) {
+			zj_ctrl.zhenjing_control(key);
+		}
 	}
 	destroyAllWindows();
 	return 0;

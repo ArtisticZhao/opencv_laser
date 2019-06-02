@@ -124,13 +124,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CSerialPort.h" />
+    <ClInclude Include="my_point_detector.h" />
     <ClInclude Include="point_detector.h" />
     <ClInclude Include="triangle.h" />
+    <ClInclude Include="zhenjing_control.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSerialPort.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="my_point_detector.cpp" />
     <ClCompile Include="point_detector.cpp" />
     <ClCompile Include="triangle.cpp" />
+    <ClCompile Include="zhenjing_control.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
