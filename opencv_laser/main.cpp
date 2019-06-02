@@ -5,11 +5,11 @@
 #include <opencv2/opencv.hpp>
 #include <core/types.hpp>
 
+#include "LaserCtrlor.h"
 #include "zhenjing_control.h"
-#include "point_detector.h"
 #include "my_point_detector.h"
 #include "triangle.h"
-void test_point(Mat &origin);
+//void test_point(Mat &origin);
 static void on_mouse(int event, int x, int y, int flags, void* ustc);
 using namespace cv;
 using namespace std;
@@ -17,8 +17,10 @@ int width = 0;
 int height = 0;
 int main()
 {
-	ZhenjingControlor zj_ctrl(1);
-	VideoCapture capture(1);
+	LaserCtrlor lz_ctrl(8);
+	//ZhenjingControlor zj_ctrl(4);
+	VideoCapture capture(2);
+	
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
@@ -30,16 +32,29 @@ int main()
 	{
 		Mat frame;
 		Mat frame_dark;
+		vector<Point2d> points;
 		// TODO light up laser
+		lz_ctrl.laser_on();
+		waitKey(500);
 		capture >> frame;
 		// TODO turn off laser
+		lz_ctrl.laser_off();
+		waitKey(500);
 		capture >> frame_dark;
 		if (flag == 0) {
 			flag = 1;
 			width = frame.size().width;
 			height = frame.size().height;
 		}
-		get_point(frame, frame_dark);
+		get_point(frame, frame_dark, points);
+		//遍历边缘
+		if (points.size() == 1) {
+			// measure
+			double d;
+			//画出所选区域
+			cv::circle(frame, points[0], 5, Scalar(0, 255, 0));
+			cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+		}
 		//test_point(frame);
 		// draw cross
 		line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
@@ -47,47 +62,47 @@ int main()
 		imshow("读取视频", frame);
 		key = waitKey(1);	//延时30
 		if (key != -1) {
-			zj_ctrl.zhenjing_control(key);
+			//zj_ctrl.zhenjing_control(key);
 		}
 	}
 	destroyAllWindows();
 	return 0;
 }
-
-void test_point(Mat &origin)
-{
-	vector<Point2d> points;
-	PointDetector pd;
-	//检测点
-	pd.Detect(origin, points);
-
-	//遍历边缘
-	if (points.size() == 1) {
-		// measure
-		double d;
-		//画出所选区域
-		cv::circle(origin, points[0], 5, Scalar(0, 255, 0));
-		cout << points[0].x- origin.size().width / 2 << " " << points[0].y - origin.size().height/2 << endl;
-		//f = measuref(points[0].x, points[0].y, 28, 46, 90);
-		d = triangle(points[0].x, points[0].y, 90, 28, 0.0277);
-		cout << "d is " << d << endl;
-		return;
-	}
-	else {
-		return;
-	}
-	//for (int i = 0; i < points.size(); ++i) {
-
-	//	//画出所选区域
-	//	cv::circle(origin, points[i], 5, Scalar(0, 255, 0));
-	//	cout << points[i].x << " " << points[i].y << endl;
-	//}
-	//return;
-	//imshow("origin", origin);
-
-	//waitKey();
-}
-
+//
+//void test_point(Mat &origin)
+//{
+//	vector<Point2d> points;
+//	PointDetector pd;
+//	//检测点
+//	pd.Detect(origin, points);
+//
+//	//遍历边缘
+//	if (points.size() == 1) {
+//		// measure
+//		double d;
+//		//画出所选区域
+//		cv::circle(origin, points[0], 5, Scalar(0, 255, 0));
+//		cout << points[0].x- origin.size().width / 2 << " " << points[0].y - origin.size().height/2 << endl;
+//		//f = measuref(points[0].x, points[0].y, 28, 46, 90);
+//		d = triangle(points[0].x, points[0].y, 90, 28, 0.0277);
+//		cout << "d is " << d << endl;
+//		return;
+//	}
+//	else {
+//		return;
+//	}
+//	//for (int i = 0; i < points.size(); ++i) {
+//
+//	//	//画出所选区域
+//	//	cv::circle(origin, points[i], 5, Scalar(0, 255, 0));
+//	//	cout << points[i].x << " " << points[i].y << endl;
+//	//}
+//	//return;
+//	//imshow("origin", origin);
+//
+//	//waitKey();
+//}
+//
 static void on_mouse(int event, int x, int y, int flags, void* ustc) {
 	if (event == EVENT_LBUTTONDOWN)//鼠标左键按下事件发生  
 	{
