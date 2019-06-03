@@ -38,7 +38,7 @@ void ZhenjingControlor::zhenjing_control(int key)
 		ADC_DV_Y = ADC_DV_Y;
 		break;
 	}
-	cout << ADC_DV_X << " " << ADC_DV_Y << endl;
+	cout <<"x: "<< ADC_DV_X << "y: " << ADC_DV_Y << endl;
 	unsigned char temp[4];
 	temp[2] = ADC_DV_X >> 8 & 0xff;
 	temp[3] = ADC_DV_X & 0xff;
@@ -48,23 +48,29 @@ void ZhenjingControlor::zhenjing_control(int key)
 	// send comport
 	this->comport.WriteData(temp, 4);
 	// update angle
-	this->angle_x = 10 / 32768 * ADC_DV_X / 0.8;
-	this->angle_y = 10 / 32768 * ADC_DV_Y / 0.8;
+	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
+	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
 }
 
 double ZhenjingControlor::get_angle_x()
 {
-	return this->angle_x;
+	//cout << "angle X: " << 90 + 2 * this->angle_x << endl;
+	return (90 + 2*this->angle_x);
 }
 
 double ZhenjingControlor::get_angle_y()
 {
-	return this->angle_y;
+	//cout << "angle Y: " << 2*this->angle_y << endl;
+	return 2*this->angle_y;
 }
 	
 ZhenjingControlor::ZhenjingControlor(int port)
 {
-	this->comport.InitPort(port, CBR_115200);
+	bool res;
+	res = this->comport.InitPort(port, CBR_115200);
+	if (!res) {
+		cout << "Õñ¾µ´®¿Ú³õÊ¼»¯Ê§°Ü!" << endl;
+	}
 	this->angle_x = 0;
 	this->angle_y = 0;
 }

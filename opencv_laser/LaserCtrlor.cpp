@@ -1,8 +1,13 @@
 #include "LaserCtrlor.h"
-
+#include <iostream>
+using namespace std;
 LaserCtrlor::LaserCtrlor(int com)
 {
-	this->comport.InitPort(com, CBR_115200);
+	bool res;
+	res = this->comport.InitPort(com, CBR_115200);
+	if (!res) {
+		cout << "激光串口初始化失败!" << endl;
+	}
 }
 
 void LaserCtrlor::laser_on()

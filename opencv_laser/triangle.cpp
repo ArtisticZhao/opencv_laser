@@ -1,5 +1,6 @@
 #include "triangle.h"
 #include <math.h>
+#include <iostream>
 
 const double pi(3.1415926535);
 
@@ -29,23 +30,32 @@ double measuref(double x, double y,double c, double L, double ar) {
 
 
 //double *zmeasure(double x,double y,double bx,double by,double L,double bi,double z[3])
-void zmeasure(double x, double y, double bx, double by, double L, double bi, double* a, int n)
+
+//double *zmeasure(double x,double y,double bx,double by,double L,double bi,double a[], int n)
+void zmeasure(double x, double y, double bx, double by, double L, double bi, double *a, int n)
 {
-	double tanbeta, qx, qy, l, tanafa, zsum, zx, zy, zz;
+	printf("in: (%f ,%f), bx: %f, by: %f, %f,%f\n", x, y, bx, by, L, bi);
+	double qx, zx, qy, zy;
 	double z[3];
 	qx = bx * pi / 180;
 	qy = by * pi / 180;
-	l = sqrt(x * x + y * y);
-	tanbeta = 1 / (cos(qy) + tan(qx));
-	tanafa = bi / l;
-	zsum = L / (1 / tanbeta + 1 / tanafa);
-	zx = zsum / tanafa;
-	zy = zsum * cos(by);
-	zz = zsum * sin(by);
-	z[0] = zx;
-	z[1] = zy;
-	z[2] = zz;
-
+	if (x == 0)
+	{
+		zx = L * tan(qx);
+	}
+	else if (bx == 90)
+	{
+		zx = bi * L / x;
+	}
+	else
+	{
+		zx = L / (x / bi + 1 / tan(qx));
+	}
+	zy = zx * y / bi;
+	z[0] = zx * x / bi;
+	z[1] = zx;
+	z[2] = zy;
+	//std::cout << z[0] << " " << z[1] << " " << z[2] << std::endl;
 	for (int i = 0; i < n; i++)
 		a[i] = z[i];
 }
