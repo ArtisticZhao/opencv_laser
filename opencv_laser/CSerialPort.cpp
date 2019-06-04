@@ -77,7 +77,7 @@ bool CSerialPort::InitPort(UINT portNo /*= 1*/, UINT baud /*= CBR_9600*/, char p
 		}
 
 		/** 获取当前串口配置参数,并且构造串口DCB参数 */
-		bIsSuccess = GetCommState(m_hComm, &dcb) && BuildCommDCB((LPCSTR)pwText, &dcb);
+		/*bIsSuccess =*/ GetCommState(m_hComm, &dcb) && BuildCommDCB((LPCSTR)pwText, &dcb);
 		/** 开启RTS flow控制 */
 		dcb.fRtsControl = RTS_CONTROL_ENABLE;
 
