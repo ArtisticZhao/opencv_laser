@@ -15,10 +15,11 @@ using namespace cv;
 using namespace std;
 int width = 0;
 int height = 0;
+ZhenjingControlor zj_ctrl(5);
+
 int main()
 {
 	LaserCtrlor lz_ctrl(8);
-	ZhenjingControlor zj_ctrl(5);
 	VideoCapture capture(0);
 	
 	// 通过下面两行设置像素分辨率, 设定值如果超过
@@ -33,11 +34,11 @@ int main()
 		Mat frame;
 		Mat frame_dark;
 		vector<Point2d> points;
-		// TODO light up laser
+		// light up laser
 		lz_ctrl.laser_on();
 		Sleep(250);
 		capture >> frame;
-		// TODO turn off laser
+		// turn off laser
 		lz_ctrl.laser_off();
 		Sleep(250);
 		capture >> frame_dark;
@@ -111,6 +112,25 @@ static void on_mouse(int event, int x, int y, int flags, void* ustc) {
 	{
 		//printf( "(%d,%d)", x-width, y-height);//打印当前坐标值
 		cout << "(" << x - width/2 << "," << y - height/2 << ")" << endl;
+	}
+	else if(event == EVENT_RBUTTONDOWN){  // 右键点击
+		// TODO  auto move laser
+		if (x<width / 3 && y>height / 3 && y < height / 3 * 2) {
+			// left
+			zj_ctrl.zhenjing_control('a');
+		}
+		else if (x > 2 * width / 3 && y > height / 3 && y < height / 3 * 2) {
+			// right
+			zj_ctrl.zhenjing_control('d');
+		}
+		else if (x > width / 3 && x < width * 2 / 3 && y < height / 3) {
+			// up
+			zj_ctrl.zhenjing_control('w');
+		}
+		else if (x > width / 3 && x < width * 2 / 3 && y > 2 * height / 3) {
+			// down
+			zj_ctrl.zhenjing_control('s');
+		}
 	}
 
 }

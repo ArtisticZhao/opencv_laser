@@ -6,7 +6,7 @@ LaserCtrlor::LaserCtrlor(int com)
 	bool res;
 	res = this->comport.InitPort(com, CBR_115200);
 	if (!res) {
-		cout << "激光串口初始化失败!" << endl;
+		cout << "激光串口初始化失败!"<< res << endl;
 	}
 }
 

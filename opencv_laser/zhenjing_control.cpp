@@ -69,7 +69,7 @@ ZhenjingControlor::ZhenjingControlor(int port)
 	bool res;
 	res = this->comport.InitPort(port, CBR_115200);
 	if (!res) {
-		cout << "Õñ¾µ´®¿Ú³õÊ¼»¯Ê§°Ü!" << endl;
+		cout << "Õñ¾µ´®¿Ú³õÊ¼»¯Ê§°Ü!" << res << endl;
 	}
 	this->angle_x = 0;
 	this->angle_y = 0;
