@@ -4,7 +4,7 @@
 #include <opencv2/highgui/highgui.hpp>  
 #include <opencv2/opencv.hpp>
 #include <core/types.hpp>
-
+#include "pid.h"
 #include "LaserCtrlor.h"
 #include "zhenjing_control.h"
 #include "my_point_detector.h"
@@ -16,11 +16,10 @@ using namespace std;
 int width = 0;
 int height = 0;
 ZhenjingControlor zj_ctrl(5);
-
 int main()
 {
-	LaserCtrlor lz_ctrl(8);
-	VideoCapture capture(0);
+	LaserCtrlor lz_ctrl(6);
+	VideoCapture capture(1);
 	
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
@@ -38,10 +37,12 @@ int main()
 		lz_ctrl.laser_on();
 		Sleep(250);
 		capture >> frame;
+		//Sleep(50);
 		// turn off laser
 		lz_ctrl.laser_off();
 		Sleep(250);
 		capture >> frame_dark;
+		//Sleep(50);
 		if (flag == 0) {
 			flag = 1;
 			width = frame.size().width;
@@ -54,10 +55,12 @@ int main()
 			double d3[3];
 			//画出所选区域
 			cv::circle(frame, points[0], 5, Scalar(0, 255, 0));
+			cout << points[0].x << " " << points[0].y << endl;
 			//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
 			// calc xyz
-			zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 15, 1060, d3, 3);
-			printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+			zj_ctrl.goal_target(points[0].x, points[0].y);
+			//zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 15, 1060, d3, 3);
+			//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 		}
 		//test_point(frame);
 		// draw cross
@@ -111,6 +114,7 @@ static void on_mouse(int event, int x, int y, int flags, void* ustc) {
 	if (event == EVENT_LBUTTONDOWN)//鼠标左键按下事件发生  
 	{
 		//printf( "(%d,%d)", x-width, y-height);//打印当前坐标值
+		zj_ctrl.set_target(x, y);
 		cout << "(" << x - width/2 << "," << y - height/2 << ")" << endl;
 	}
 	else if(event == EVENT_RBUTTONDOWN){  // 右键点击
