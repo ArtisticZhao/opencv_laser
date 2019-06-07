@@ -18,13 +18,13 @@ int height = 0;
 ZhenjingControlor zj_ctrl(5);
 int main()
 {
-	LaserCtrlor lz_ctrl(6);
-	VideoCapture capture(1);
+	LaserCtrlor lz_ctrl(7);
+	VideoCapture capture(2);
 	
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
-	namedWindow("读取视频", 0);
+	namedWindow("读取视频", WINDOW_NORMAL);
 	int key = 0;
 	setMouseCallback("读取视频", on_mouse, NULL);
 	int flag = 0;
@@ -47,6 +47,7 @@ int main()
 			flag = 1;
 			width = frame.size().width;
 			height = frame.size().height;
+			cout << "width is " << width << " height is " << height << endl;
 		}
 		get_point(frame, frame_dark, points);
 		//遍历边缘
@@ -55,12 +56,12 @@ int main()
 			double d3[3];
 			//画出所选区域
 			cv::circle(frame, points[0], 5, Scalar(0, 255, 0));
-			cout << points[0].x << " " << points[0].y << endl;
-			//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+			//cout << points[0].x << " " << points[0].y << endl;
+			cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
 			// calc xyz
-			zj_ctrl.goal_target(points[0].x, points[0].y);
-			//zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 15, 1060, d3, 3);
-			//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+			//zj_ctrl.goal_target(points[0].x, points[0].y);
+			zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 18.4, 1090, d3, 3);
+			printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 		}
 		//test_point(frame);
 		// draw cross

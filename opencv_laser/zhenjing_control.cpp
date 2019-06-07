@@ -44,7 +44,7 @@ void ZhenjingControlor::zhenjing_control(int key)
 	temp[0] = ADC_DV_Y >> 8 & 0xff;
 	temp[1] = ADC_DV_Y & 0xff;
 	// send comport
-	printf("key: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
+	//printf("key: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
 	this->comport.WriteData(temp, 4);
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
@@ -83,7 +83,7 @@ void ZhenjingControlor::goal_target(int real_x, int real_y)
 	temp[0] = ADC_DV_Y >> 8 & 0xff;
 	temp[1] = ADC_DV_Y & 0xff;
 	// send comport
-	printf("goal: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
+	//printf("goal: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
 	this->comport.WriteData(temp, 4);
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
@@ -101,6 +101,10 @@ ZhenjingControlor::ZhenjingControlor(int port)
 	}
 	this->angle_x = 0;
 	this->angle_y = 0;
+	this->ADC_DV_X = 0;
+	this->ADC_DV_Y = 0;
+	this->real_x = 0;
+	this->real_y = 0;
 }
 
 ZhenjingControlor::~ZhenjingControlor(void)

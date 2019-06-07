@@ -17,8 +17,8 @@ private:
 	Pid_control pid_y;
 	double angle_x;
 	double angle_y;
-	int target_x=517;
-	int target_y=218;
+	int target_x=1215;
+	int target_y=541;
 	int real_x;
 	int real_y;
 	int16_t ADC_DV_X;
