@@ -19,6 +19,9 @@ void ZhenjingControlor::zhenjing_control(int key)
 	case '4':
 		step = 10000;
 		break;
+	case '5':
+		step = 5000;
+		break;
 	case 'w':
 		ADC_DV_Y = ADC_DV_Y - step;
 		break;
@@ -37,6 +40,24 @@ void ZhenjingControlor::zhenjing_control(int key)
 		break;
 	}
 	cout <<"x: "<< ADC_DV_X << "y: " << ADC_DV_Y << endl;
+	unsigned char temp[4];
+	temp[2] = ADC_DV_X >> 8 & 0xff;
+	temp[3] = ADC_DV_X & 0xff;
+
+	temp[0] = ADC_DV_Y >> 8 & 0xff;
+	temp[1] = ADC_DV_Y & 0xff;
+	// send comport
+	//printf("key: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
+	this->comport.WriteData(temp, 4);
+	// update angle
+	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
+	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
+}
+
+void ZhenjingControlor::goto_volt(int x, int y)
+{
+	ADC_DV_X = x;
+	ADC_DV_Y = y;
 	unsigned char temp[4];
 	temp[2] = ADC_DV_X >> 8 & 0xff;
 	temp[3] = ADC_DV_X & 0xff;
@@ -88,6 +109,11 @@ void ZhenjingControlor::goal_target(int real_x, int real_y)
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
 	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
+}
+
+void ZhenjingControlor::show_volts()
+{
+	cout << "Volt: x: " << this->ADC_DV_X << " y: " << this->ADC_DV_Y << endl;
 }
 	
 ZhenjingControlor::ZhenjingControlor(int port)

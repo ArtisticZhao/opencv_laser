@@ -28,9 +28,12 @@ int main()
 	LaserCtrlor lz_ctrl(7);
 	VideoCapture capture(2);
 	vector<double> xyz_points;
+	vector<double> xyz_back;
 	vector<double> uvs;
+	vector<double> uvs_back;
 	vector<obj_frame> frames;
 	int xyz_index=0;
+	int readd_index = 0;
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
@@ -66,15 +69,15 @@ int main()
 		if (points.size() == 1) {
 			// measure			
 			//画出所选区域
-			cv::circle(frame, points[0], 5, Scalar(0, 255, 0));
+			cv::circle(frame, points[0], 5, Scalar(0, 255, 0),5);
 			//cout << points[0].x << " " << points[0].y << endl;
-			cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+			//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
 			// calc xyz
 			//zj_ctrl.goal_target(points[0].x, points[0].y);
 			zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 18.4, 1090, d3, 3);
 			uv[0] = points[0].x / width;
-			uv[1] = 1 - points[0].y / height;
-			printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+			uv[1] = points[0].y / height;
+			//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 		}
 		//test_point(frame);
 		// draw cross
@@ -89,10 +92,14 @@ int main()
 				xyz_points.push_back(d3[0]);
 				xyz_points.push_back(d3[1]);
 				xyz_points.push_back(d3[2]);
-
+				xyz_back.push_back(d3[0]);
+				xyz_back.push_back(d3[1]);
+				xyz_back.push_back(d3[2]);
 				uvs.push_back(uv[0]);
 				uvs.push_back(uv[1]);
-				printf("[INFO]point x:%f, y:%f, z:%f  u:%f, v:%f\n", d3[0], d3[1], d3[2], uv[0], uv[1]);
+				uvs_back.push_back(uv[0]);
+				uvs_back.push_back(uv[1]);
+				printf("[INFO]count %d point x:%f, y:%f, z:%f  u:%f, v:%f\n", uvs_back.size()/2,d3[0], d3[1], d3[2], uv[0], uv[1]);
 			}
 			else if (key == 'p') {
 				// take photo
@@ -104,7 +111,7 @@ int main()
 				cout << "points from " << xyz_index << " to " << xyz_points.size() / 3 << endl;
 				vector<Vector2> dt_points;
 				for (int i = xyz_index; i < xyz_points.size(); i += 3) {
-					int i2 = i + 1;
+					int i2 = i + 2;
 					dt_points.push_back(Vector2{ xyz_points.at(i), xyz_points.at(i2) });// only use x,y to dt
 				}
 				Delaunay triangulation;
@@ -171,6 +178,49 @@ int main()
 				// 关闭打开的文件
 				outfile.close();
 				cout << "[INFO] obj saved" << endl;
+			}
+			else if (key == 'i') {
+				// show info
+				cout << "[INFO] count is " << xyz_back.size()/3 << endl;
+				zj_ctrl.show_volts();
+			}
+			else if (key == 'z') {
+				readd_index--;
+				cout << "[INFO] re_index is " << readd_index << " total: " << xyz_back.size()/3 << endl;
+			}
+			else if (key == 'x') {
+				readd_index++;
+				cout << "[INFO] re_index is " << readd_index << " total: "<< xyz_back.size()/3 << endl;
+			}
+			else if (key == 'c') {
+				// re add
+				// add point
+				readd_index--;
+				xyz_points.push_back(xyz_back.at(readd_index * 3));
+				xyz_points.push_back(xyz_back.at(readd_index * 3 + 1));
+				xyz_points.push_back(xyz_back.at(readd_index * 3 + 2));
+
+				uvs.push_back(uvs_back.at(readd_index * 2));
+				uvs.push_back(uvs_back.at(readd_index * 2 + 1));
+				printf("[INFO]point x:%f, y:%f, z:%f  u:%f, v:%f\n", xyz_points.at(readd_index * 3), xyz_points.at(readd_index * 3 + 1), xyz_points.at(readd_index * 3 + 2), uvs.at(readd_index * 2), uvs.at(readd_index * 2 + 1));
+			}
+			else if (key == 'g') {
+				// read cmd
+				char cmd[100];
+				char* p;
+				ifstream infile;
+				infile.open("cmd.txt");
+				infile.getline(cmd, 100);
+				if (cmd[0] == 'g' && cmd[1] == ':') {
+					p = strchr(cmd, ':');
+					p++;
+					int x = std::stoi(p);
+					p = strchr(cmd, ',');
+					p++;
+					int y = std::stoi(p);
+					cout << "go: x " << x << " y " << y << endl;
+					zj_ctrl.goto_volt(x, y);
+				}
 			}
 		}
 	}
