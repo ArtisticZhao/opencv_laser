@@ -13,11 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="dt">
+      <UniqueIdentifier>{46644452-0fcd-4c8a-9fd4-b30e537e111b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="triangle.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="my_point_detector.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -33,12 +33,30 @@
     <ClInclude Include="pid.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="triangle_cxf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="delaunay.h">
+      <Filter>dt</Filter>
+    </ClInclude>
+    <ClInclude Include="edge.h">
+      <Filter>dt</Filter>
+    </ClInclude>
+    <ClInclude Include="numeric.h">
+      <Filter>dt</Filter>
+    </ClInclude>
+    <ClInclude Include="triangle.h">
+      <Filter>dt</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.h">
+      <Filter>dt</Filter>
+    </ClInclude>
+    <ClInclude Include="obj_generator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="triangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="my_point_detector.cpp">
@@ -54,6 +72,27 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pid.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="triangle_cxf.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="delaunay.cpp">
+      <Filter>dt</Filter>
+    </ClCompile>
+    <ClCompile Include="edge.cpp">
+      <Filter>dt</Filter>
+    </ClCompile>
+    <ClCompile Include="numeric.cpp">
+      <Filter>dt</Filter>
+    </ClCompile>
+    <ClCompile Include="triangle.cpp">
+      <Filter>dt</Filter>
+    </ClCompile>
+    <ClCompile Include="vector2.cpp">
+      <Filter>dt</Filter>
+    </ClCompile>
+    <ClCompile Include="obj_generator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

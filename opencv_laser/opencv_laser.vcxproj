@@ -125,19 +125,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CSerialPort.h" />
+    <ClInclude Include="delaunay.h" />
+    <ClInclude Include="edge.h" />
     <ClInclude Include="LaserCtrlor.h" />
     <ClInclude Include="my_point_detector.h" />
+    <ClInclude Include="numeric.h" />
+    <ClInclude Include="obj_generator.h" />
     <ClInclude Include="pid.h" />
     <ClInclude Include="triangle.h" />
+    <ClInclude Include="triangle_cxf.h" />
+    <ClInclude Include="vector2.h" />
     <ClInclude Include="zhenjing_control.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSerialPort.cpp" />
+    <ClCompile Include="delaunay.cpp" />
+    <ClCompile Include="edge.cpp" />
     <ClCompile Include="LaserCtrlor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="my_point_detector.cpp" />
+    <ClCompile Include="numeric.cpp" />
+    <ClCompile Include="obj_generator.cpp" />
     <ClCompile Include="pid.cpp" />
     <ClCompile Include="triangle.cpp" />
+    <ClCompile Include="triangle_cxf.cpp" />
+    <ClCompile Include="vector2.cpp" />
     <ClCompile Include="zhenjing_control.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
