@@ -39,11 +39,14 @@ void get_point(Mat& origin_light, Mat& origin_dark, vector<Point2d>& points) {
 	// 二值化
 	threshold(sub_gray, sub_gray, 60, 255, THRESH_BINARY);
 	//形态学
+	//namedWindow("beforesub", WINDOW_NORMAL);
+	//namedWindow("sub", WINDOW_NORMAL);
+	//imshow("beforesub", sub_gray);
 	Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
 	morphologyEx(sub_gray, sub_gray, MORPH_CLOSE, kernel);
 	morphologyEx(sub_gray, sub_gray, MORPH_OPEN, kernel);
 	// debug
-	imshow("sub", sub_gray);
+	//imshow("sub", sub_gray);
 #ifdef _DEBUG_H_
 	gray = sub_gray;
 	setMouseCallback("sub", _mouseCallback, NULL);

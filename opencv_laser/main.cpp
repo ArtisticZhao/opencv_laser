@@ -261,7 +261,7 @@ void show_up(ifstream &yan_file) {
 			p = strchr(cmd, ',');
 			p++;
 			int y = std::stoi(p);
-			cout << "go: x " << x << " y " << y << endl;
+			//cout << "go: x " << x << " y " << y << endl;
 			zj_ctrl.goto_volt(x, y);
 			measure_lazer();
 			waitKey(200);
@@ -329,6 +329,9 @@ void show_up(ifstream &yan_file) {
 				}
 				xyz_index = xyz_points.size();
 			}
+		}
+		else if (cmd[0] == 'h') {
+			waitKey();
 		}
 		
 	}

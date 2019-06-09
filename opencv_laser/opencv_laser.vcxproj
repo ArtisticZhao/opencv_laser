@@ -152,6 +152,9 @@
     <ClCompile Include="vector2.cpp" />
     <ClCompile Include="zhenjing_control.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="script.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
