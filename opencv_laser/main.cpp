@@ -1,4 +1,6 @@
-
+#define CAMERA 2
+#define ZHENJINGCOM 5
+#define JIGUANGCOM 7
 #include <iostream>  
 #include <fstream>
 
@@ -22,72 +24,89 @@ using namespace cv;
 using namespace std;
 int width = 0;
 int height = 0;
-ZhenjingControlor zj_ctrl(5);
+ZhenjingControlor zj_ctrl(ZHENJINGCOM);
+LaserCtrlor lz_ctrl(JIGUANGCOM);
+vector<double> xyz_points;
+vector<double> xyz_back;
+vector<double> uvs;
+vector<double> uvs_back;
+vector<obj_frame> frames;
+int xyz_index = 0;
+int readd_index = 0;
+double d3[3];
+double uv[2];
+int flag = 0;  // 存储图片大小标志位
+Mat frame_dark;
+VideoCapture capture(CAMERA);
+
+void show_up(ifstream& yan_file);
+
+void measure_lazer() {
+	Mat frame;
+	vector<Point2d> points;
+
+	// light up laser
+	lz_ctrl.laser_on();
+	Sleep(250);
+	capture >> frame;
+	//Sleep(50);
+	// turn off laser
+	lz_ctrl.laser_off();
+	Sleep(250);
+	capture >> frame_dark;
+	//Sleep(50);
+	if (flag == 0) {
+		flag = 1;
+		width = frame.size().width;
+		height = frame.size().height;
+		cout << "width is " << width << " height is " << height << endl;
+	}
+	get_point(frame, frame_dark, points);
+	//遍历边缘
+	if (points.size() == 1) {
+		// measure			
+		//画出所选区域
+		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
+		//cout << points[0].x << " " << points[0].y << endl;
+		//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+		// calc xyz
+		//zj_ctrl.goal_target(points[0].x, points[0].y);
+		zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 18.4, 1090, d3, 3);
+		uv[0] = points[0].x / width;
+		uv[1] = points[0].y / height;
+		//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+	}
+	//test_point(frame);
+	// draw cross
+	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
+	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
+	imshow("读取视频", frame);
+}
 int main()
 {
-	LaserCtrlor lz_ctrl(7);
-	VideoCapture capture(2);
-	vector<double> xyz_points;
-	vector<double> xyz_back;
-	vector<double> uvs;
-	vector<double> uvs_back;
-	vector<obj_frame> frames;
-	int xyz_index=0;
-	int readd_index = 0;
+	Mat jia_picture;
+	// 打开剧本
+	ifstream yan_file;
+	yan_file.open("script.txt");
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
 	namedWindow("读取视频", WINDOW_NORMAL);
 	int key = 0;
 	setMouseCallback("读取视频", on_mouse, NULL);
-	int flag = 0;
+	
 	while (key != 'q')
 	{
-		Mat frame;
-		Mat frame_dark;
-		vector<Point2d> points;
-		double d3[3];
-		double uv[2];
-		// light up laser
-		lz_ctrl.laser_on();
-		Sleep(250);
-		capture >> frame;
-		//Sleep(50);
-		// turn off laser
-		lz_ctrl.laser_off();
-		Sleep(250);
-		capture >> frame_dark;
-		//Sleep(50);
-		if (flag == 0) {
-			flag = 1;
-			width = frame.size().width;
-			height = frame.size().height;
-			cout << "width is " << width << " height is " << height << endl;
-		}
-		get_point(frame, frame_dark, points);
-		//遍历边缘
-		if (points.size() == 1) {
-			// measure			
-			//画出所选区域
-			cv::circle(frame, points[0], 5, Scalar(0, 255, 0),5);
-			//cout << points[0].x << " " << points[0].y << endl;
-			//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
-			// calc xyz
-			//zj_ctrl.goal_target(points[0].x, points[0].y);
-			zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 18.4, 1090, d3, 3);
-			uv[0] = points[0].x / width;
-			uv[1] = points[0].y / height;
-			//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
-		}
-		//test_point(frame);
-		// draw cross
-		line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
-		line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
-		imshow("读取视频", frame);
+		measure_lazer();
 		key = waitKey(1);	//延时30
 		if (key != -1) {
 			zj_ctrl.zhenjing_control(key);
-			if (key == 'v') {
+			if (key == 'j') {
+				jia_picture = imread("j.bmp", IMREAD_UNCHANGED);
+				namedWindow("边缘提取", WINDOW_NORMAL);
+				imshow("边缘提取", jia_picture);
+			}
+			else if (key == 'v') {
 				// add point
 				xyz_points.push_back(d3[0]);
 				xyz_points.push_back(d3[1]);
@@ -100,6 +119,10 @@ int main()
 				uvs_back.push_back(uv[0]);
 				uvs_back.push_back(uv[1]);
 				printf("[INFO]count %d point x:%f, y:%f, z:%f  u:%f, v:%f\n", uvs_back.size()/2,d3[0], d3[1], d3[2], uv[0], uv[1]);
+			}
+			else if (key == 'y') {
+				// 演剧本
+				show_up(yan_file);
 			}
 			else if (key == 'p') {
 				// take photo
@@ -206,10 +229,10 @@ int main()
 			}
 			else if (key == 'g') {
 				// read cmd
-				char cmd[100];
-				char* p;
 				ifstream infile;
 				infile.open("cmd.txt");
+				char cmd[100];
+				char* p;
 				infile.getline(cmd, 100);
 				if (cmd[0] == 'g' && cmd[1] == ':') {
 					p = strchr(cmd, ':');
@@ -226,6 +249,89 @@ int main()
 	}
 	destroyAllWindows();
 	return 0;
+}
+void show_up(ifstream &yan_file) {
+	char cmd[100];
+	char* p;
+	while (yan_file.getline(cmd, 100)) {
+		if (cmd[0] == 'g' && cmd[1] == ':') {
+			p = strchr(cmd, ':');
+			p++;
+			int x = std::stoi(p);
+			p = strchr(cmd, ',');
+			p++;
+			int y = std::stoi(p);
+			cout << "go: x " << x << " y " << y << endl;
+			zj_ctrl.goto_volt(x, y);
+			measure_lazer();
+			waitKey(200);
+			/*int key=0;
+			while (key != 'v') {
+				measure_lazer();
+				key = waitKey(5);
+			}*/
+			// add point to backup
+			xyz_back.push_back(d3[0]);
+			xyz_back.push_back(d3[1]);
+			xyz_back.push_back(d3[2]);
+			uvs_back.push_back(uv[0]);
+			uvs_back.push_back(uv[1]);
+			printf("[INFO]count %d point x:%f, y:%f, z:%f  u:%f, v:%f\n", uvs_back.size() / 2, d3[0], d3[1], d3[2], uv[0], uv[1]);
+		}
+		else if (cmd[0] == 'c' && cmd[1] == ':') {
+			// 添加重复的点到模型
+			p = strchr(cmd, ':');
+			p++;
+			int x = std::stoi(p);
+			cout << "add " << x << endl;
+			// add point
+			readd_index = x - 1;
+			xyz_points.push_back(xyz_back.at(readd_index * 3));
+			xyz_points.push_back(xyz_back.at(readd_index * 3 + 1));
+			xyz_points.push_back(xyz_back.at(readd_index * 3 + 2));
+
+			uvs.push_back(uvs_back.at(readd_index * 2));
+			uvs.push_back(uvs_back.at(readd_index * 2 + 1));
+			printf("[INFO]point x:%f, y:%f, z:%f  u:%f, v:%f\n", xyz_points.at(readd_index * 3), xyz_points.at(readd_index * 3 + 1), xyz_points.at(readd_index * 3 + 2), uvs.at(readd_index * 2), uvs.at(readd_index * 2 + 1));
+		}
+		else if (cmd[0] == 'm') {
+			// new frame
+			cout << "points from " << xyz_index << " to " << xyz_points.size() / 3 << endl;
+			vector<Vector2> dt_points;
+			for (int i = xyz_index; i < xyz_points.size(); i += 3) {
+				int i2 = i + 2;
+				dt_points.push_back(Vector2{ xyz_points.at(i), xyz_points.at(i2) });// only use x,y to dt
+			}
+			Delaunay triangulation;
+			vector<Triangle> triangles = triangulation.triangulate(dt_points);
+			cout << "find triangles: " << triangles.size() << endl;
+			if (triangles.size() > 0) {
+				for (int i = 0; i < triangles.size(); i++) {
+					double find_x = triangles.at(i).a->x;
+					int a_index = find_index(xyz_index, xyz_points, find_x);
+					// a 3d point is xyz_points.at(x_index) +1 +2
+					find_x = triangles.at(i).b->x;
+					int b_index = find_index(xyz_index, xyz_points, find_x);
+					find_x = triangles.at(i).c->x;
+					int c_index = find_index(xyz_index, xyz_points, find_x);
+					// 计算向量
+					vector3 v3 = cross_product(vector3{
+						(xyz_points.at(a_index) - xyz_points.at(b_index)),
+						(xyz_points.at(a_index + 1) - xyz_points.at(b_index + 1)),
+						(xyz_points.at(a_index + 2) - xyz_points.at(b_index + 2)) },
+						vector3{
+						(xyz_points.at(c_index) - xyz_points.at(b_index)),
+					(xyz_points.at(c_index + 1) - xyz_points.at(b_index + 1)),
+					(xyz_points.at(c_index + 2) - xyz_points.at(b_index + 2))
+						});
+					// 保存
+					frames.push_back(obj_frame{ {v3.x, v3.y, v3.z},{a_index, b_index, c_index} });
+				}
+				xyz_index = xyz_points.size();
+			}
+		}
+		
+	}
 }
 vector3 cross_product(vector3 a, vector3 b) {
 	vector3 c;

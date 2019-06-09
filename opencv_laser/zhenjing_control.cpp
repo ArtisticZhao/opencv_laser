@@ -1,10 +1,12 @@
 #include "zhenjing_control.h"
 #include <cstdint>
 #include <iostream>
+//#include <iostream>
 using namespace std;
 void ZhenjingControlor::zhenjing_control(int key)
 {
 	static int16_t step;
+	bool show_flag = true;
 	switch (key)
 	{
 	case '1':
@@ -35,11 +37,14 @@ void ZhenjingControlor::zhenjing_control(int key)
 		ADC_DV_X = ADC_DV_X + step;
 		break;
 	default:
+		show_flag = false;
 		ADC_DV_X = ADC_DV_X;
 		ADC_DV_Y = ADC_DV_Y;
 		break;
 	}
-	cout <<"x: "<< ADC_DV_X << "y: " << ADC_DV_Y << endl;
+	if (show_flag) {  // 当只有移动光点的时候才显示回显
+		cout << "x: " << ADC_DV_X << "y: " << ADC_DV_Y << endl;
+	}	
 	unsigned char temp[4];
 	temp[2] = ADC_DV_X >> 8 & 0xff;
 	temp[3] = ADC_DV_X & 0xff;

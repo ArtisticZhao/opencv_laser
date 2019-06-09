@@ -43,7 +43,7 @@ void get_point(Mat& origin_light, Mat& origin_dark, vector<Point2d>& points) {
 	morphologyEx(sub_gray, sub_gray, MORPH_CLOSE, kernel);
 	morphologyEx(sub_gray, sub_gray, MORPH_OPEN, kernel);
 	// debug
-	//imshow("sub", sub_gray);
+	imshow("sub", sub_gray);
 #ifdef _DEBUG_H_
 	gray = sub_gray;
 	setMouseCallback("sub", _mouseCallback, NULL);

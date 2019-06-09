@@ -5,7 +5,6 @@
 using namespace std;
 void Pid_control::PID_init(float kp, float ki, float kd)
 {
-	printf("PID_init begin \n");
 	pid.target = 515.0;
 	pid.Actual = 0.0;
 	pid.err = 0.0;
@@ -15,7 +14,6 @@ void Pid_control::PID_init(float kp, float ki, float kd)
 	pid.Kp = kp;
 	pid.Ki = ki;
 	pid.Kd = kd;
-	printf("PID_init end \n");
 }
 
 float Pid_control::PID_realize(float end, float real)
