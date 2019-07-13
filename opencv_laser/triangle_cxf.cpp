@@ -34,7 +34,7 @@ double measuref(double x, double y,double c, double L, double ar) {
 //double *zmeasure(double x,double y,double bx,double by,double L,double bi,double a[], int n)
 void zmeasure(double x, double y, double bx, double by, double L, double bi, double *a, int n)
 {
-	printf("in: (%f ,%f), bx: %f, by: %f, %f,%f\n", x, y, bx, by, L, bi);
+	//printf("in: (%f ,%f), bx: %f, by: %f, %f,%f\n", x, y, bx, by, L, bi);
 	double qx, zx, qy, zy;
 	double z[3];
 	qx = bx * pi / 180;

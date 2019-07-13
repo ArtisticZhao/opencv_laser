@@ -1,4 +1,4 @@
-#define CAMERA 2
+#define CAMERA 1
 #define ZHENJINGCOM 5
 #define JIGUANGCOM 7
 #include <iostream>  
@@ -47,12 +47,12 @@ void measure_lazer() {
 
 	// light up laser
 	lz_ctrl.laser_on();
-	Sleep(250);
+	Sleep(80);
 	capture >> frame;
 	//Sleep(50);
 	// turn off laser
 	lz_ctrl.laser_off();
-	Sleep(250);
+	Sleep(80);
 	capture >> frame_dark;
 	//Sleep(50);
 	if (flag == 0) {
@@ -71,10 +71,10 @@ void measure_lazer() {
 		//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
 		// calc xyz
 		//zj_ctrl.goal_target(points[0].x, points[0].y);
-		zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 18.4, 1090, d3, 3);
+		zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
 		uv[0] = points[0].x / width;
 		uv[1] = points[0].y / height;
-		//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+		printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 	}
 	//test_point(frame);
 	// draw cross

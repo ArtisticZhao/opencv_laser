@@ -41,7 +41,7 @@ Mat moveLightDiff(Mat src, int radius) {
 
 int main(void)
 {
-	Mat src = imread("e:/IMG_2372.JPG");
+	Mat src = imread("e:/1.bmp");
 	Mat src_hsv;
 	Mat bin;
 	Mat src_h;
@@ -59,7 +59,7 @@ int main(void)
 	vector<vector<Point> > controus;
 	controus.push_back(bigestcontrour);
 	cv::drawContours(src, controus, 0, Scalar(0, 0, 255), 3);
-
+	imshow("1",src);
 	waitKey();
 	return 0;
 }
