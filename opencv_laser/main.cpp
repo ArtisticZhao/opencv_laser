@@ -1,6 +1,9 @@
-#define CAMERA 1
+#define CAMERA 0
 #define ZHENJINGCOM 5
-#define JIGUANGCOM 7
+#define JIGUANGCOM 26
+
+//#define CHAFEN
+
 #include <iostream>  
 #include <fstream>
 
@@ -16,6 +19,7 @@
 #include "vector2.h"
 #include "delaunay.h"
 #include "obj_generator.h"
+#include "point_detector.h"
 //void test_point(Mat &origin);
 int find_index(int start, vector<double> points, double val);
 vector3 cross_product(vector3 a, vector3 b);
@@ -40,19 +44,20 @@ Mat frame_dark;
 VideoCapture capture(CAMERA);
 
 void show_up(ifstream& yan_file);
+void test_point(Mat& origin, vector<Point2d>& points);
 
 void measure_lazer() {
 	Mat frame;
 	vector<Point2d> points;
-
+#ifdef CHAFEN
 	// light up laser
 	lz_ctrl.laser_on();
-	Sleep(80);
+	Sleep(85);
 	capture >> frame;
 	//Sleep(50);
 	// turn off laser
 	lz_ctrl.laser_off();
-	Sleep(80);
+	Sleep(85);
 	capture >> frame_dark;
 	//Sleep(50);
 	if (flag == 0) {
@@ -62,13 +67,17 @@ void measure_lazer() {
 		cout << "width is " << width << " height is " << height << endl;
 	}
 	get_point(frame, frame_dark, points);
+#else
+	capture >> frame;
+	test_point(frame, points);
+#endif
 	//遍历边缘
-	if (points.size() == 1) {
+	if (points.size() != 0) {
 		// measure			
 		//画出所选区域
 		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
 		//cout << points[0].x << " " << points[0].y << endl;
-		//cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+		cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
 		// calc xyz
 		//zj_ctrl.goal_target(points[0].x, points[0].y);
 		zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
@@ -78,8 +87,8 @@ void measure_lazer() {
 	}
 	//test_point(frame);
 	// draw cross
-	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
-	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
+	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 5, LINE_AA);
+	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 5, LINE_AA);
 	imshow("读取视频", frame);
 }
 int main()
@@ -356,41 +365,35 @@ int find_index(int start,vector<double> points, double val) {
 	}
 	return x_index;
 }
-//
-//void test_point(Mat &origin)
-//{
-//	vector<Point2d> points;
-//	PointDetector pd;
-//	//检测点
-//	pd.Detect(origin, points);
-//
-//	//遍历边缘
-//	if (points.size() == 1) {
-//		// measure
-//		double d;
-//		//画出所选区域
-//		cv::circle(origin, points[0], 5, Scalar(0, 255, 0));
-//		cout << points[0].x- origin.size().width / 2 << " " << points[0].y - origin.size().height/2 << endl;
-//		//f = measuref(points[0].x, points[0].y, 28, 46, 90);
-//		d = triangle(points[0].x, points[0].y, 90, 28, 0.0277);
-//		cout << "d is " << d << endl;
-//		return;
-//	}
-//	else {
-//		return;
-//	}
-//	//for (int i = 0; i < points.size(); ++i) {
-//
-//	//	//画出所选区域
-//	//	cv::circle(origin, points[i], 5, Scalar(0, 255, 0));
-//	//	cout << points[i].x << " " << points[i].y << endl;
-//	//}
-//	//return;
-//	//imshow("origin", origin);
-//
-//	//waitKey();
-//}
-//
+
+void test_point(Mat &origin, vector<Point2d>& points)
+{
+	//vector<Point2d> points;
+	PointDetector pd;
+	//检测点
+	pd.Detect(origin, points);
+	return;
+	////遍历边缘
+	//if (points.size() == 1) {
+	//	//画出所选区域
+	//	cv::circle(origin, points[0], 5, Scalar(0, 255, 0));
+	//	cout << points[0].x- origin.size().width / 2 << " " << points[0].y - origin.size().height/2 << endl;
+	//	return;
+	//}
+	//else {
+	//	return;
+	//}
+	//for (int i = 0; i < points.size(); ++i) {
+
+	//	//画出所选区域
+	//	cv::circle(origin, points[i], 5, Scalar(0, 255, 0));
+	//	cout << points[i].x << " " << points[i].y << endl;
+	//}
+	//return;
+	//imshow("origin", origin);
+
+}
+
 static void on_mouse(int event, int x, int y, int flags, void* ustc) {
 	if (event == EVENT_LBUTTONDOWN)//鼠标左键按下事件发生  
 	{

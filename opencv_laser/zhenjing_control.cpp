@@ -45,15 +45,16 @@ void ZhenjingControlor::zhenjing_control(int key)
 	if (show_flag) {  // 当只有移动光点的时候才显示回显
 		cout << "x: " << ADC_DV_X << "y: " << ADC_DV_Y << endl;
 	}	
-	unsigned char temp[4];
-	temp[2] = ADC_DV_X >> 8 & 0xff;
-	temp[3] = ADC_DV_X & 0xff;
+	unsigned char temp[5];
+	temp[3] = ADC_DV_X >> 8 & 0xff;
+	temp[4] = ADC_DV_X & 0xff;
 
-	temp[0] = ADC_DV_Y >> 8 & 0xff;
-	temp[1] = ADC_DV_Y & 0xff;
+	temp[1] = ADC_DV_Y >> 8 & 0xff;
+	temp[2] = ADC_DV_Y & 0xff;
+	temp[0] = 0xaa;
 	// send comport
 	//printf("key: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
-	this->comport.WriteData(temp, 4);
+	this->comport.WriteData(temp, 5);
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
 	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
@@ -63,15 +64,16 @@ void ZhenjingControlor::goto_volt(int x, int y)
 {
 	ADC_DV_X = x;
 	ADC_DV_Y = y;
-	unsigned char temp[4];
-	temp[2] = ADC_DV_X >> 8 & 0xff;
-	temp[3] = ADC_DV_X & 0xff;
+	unsigned char temp[5];
+	temp[3] = ADC_DV_X >> 8 & 0xff;
+	temp[4] = ADC_DV_X & 0xff;
 
-	temp[0] = ADC_DV_Y >> 8 & 0xff;
-	temp[1] = ADC_DV_Y & 0xff;
+	temp[1] = ADC_DV_Y >> 8 & 0xff;
+	temp[2] = ADC_DV_Y & 0xff;
+	temp[0] = 0xaa;
 	// send comport
 	//printf("key: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
-	this->comport.WriteData(temp, 4);
+	this->comport.WriteData(temp, 5);
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
 	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
@@ -102,15 +104,16 @@ void ZhenjingControlor::goal_target(int real_x, int real_y)
 	this->real_y = real_y;
 	ADC_DV_X = ADC_DV_X + pid_x.PID_realize(target_x, real_x);
 	ADC_DV_Y = ADC_DV_Y + pid_y.PID_realize(target_y, real_y);
-	unsigned char temp[4];
-	temp[2] = ADC_DV_X >> 8 & 0xff;
-	temp[3] = ADC_DV_X & 0xff;
+	unsigned char temp[5];
+	temp[3] = ADC_DV_X >> 8 & 0xff;
+	temp[4] = ADC_DV_X & 0xff;
 
-	temp[0] = ADC_DV_Y >> 8 & 0xff;
-	temp[1] = ADC_DV_Y & 0xff;
+	temp[1] = ADC_DV_Y >> 8 & 0xff;
+	temp[2] = ADC_DV_Y & 0xff;
+	temp[0] = 0xaa;
 	// send comport
 	//printf("goal: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
-	this->comport.WriteData(temp, 4);
+	this->comport.WriteData(temp, 5);
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
 	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;

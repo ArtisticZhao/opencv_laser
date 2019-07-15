@@ -132,6 +132,7 @@
     <ClInclude Include="numeric.h" />
     <ClInclude Include="obj_generator.h" />
     <ClInclude Include="pid.h" />
+    <ClInclude Include="point_detector.h" />
     <ClInclude Include="triangle.h" />
     <ClInclude Include="triangle_cxf.h" />
     <ClInclude Include="vector2.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="numeric.cpp" />
     <ClCompile Include="obj_generator.cpp" />
     <ClCompile Include="pid.cpp" />
+    <ClCompile Include="point_detector.cpp" />
     <ClCompile Include="triangle.cpp" />
     <ClCompile Include="triangle_cxf.cpp" />
     <ClCompile Include="vector2.cpp" />

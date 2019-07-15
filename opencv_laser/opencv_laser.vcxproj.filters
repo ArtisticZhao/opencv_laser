@@ -54,6 +54,9 @@
     <ClInclude Include="obj_generator.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="point_detector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -93,6 +96,9 @@
       <Filter>dt</Filter>
     </ClCompile>
     <ClCompile Include="obj_generator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="point_detector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
