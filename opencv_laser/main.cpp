@@ -70,6 +70,12 @@ void measure_lazer() {
 #else
 	capture >> frame;
 	test_point(frame, points);
+	if (flag == 0) {
+		flag = 1;
+		width = frame.size().width;
+		height = frame.size().height;
+		cout << "width is " << width << " height is " << height << endl;
+	}
 #endif
 	//遍历边缘
 	if (points.size() != 0) {
@@ -77,18 +83,18 @@ void measure_lazer() {
 		//画出所选区域
 		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
 		//cout << points[0].x << " " << points[0].y << endl;
-		cout << points[0].x - frame.size().width / 2 << " " << points[0].y - frame.size().height / 2 << endl;
+		cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
 		// calc xyz
 		//zj_ctrl.goal_target(points[0].x, points[0].y);
-		zmeasure(points[0].x - frame.size().width / 2, (points[0].y - frame.size().height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
+		zmeasure(points[0].x -width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
 		uv[0] = points[0].x / width;
 		uv[1] = points[0].y / height;
 		printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 	}
 	//test_point(frame);
 	// draw cross
-	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 5, LINE_AA);
-	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 5, LINE_AA);
+	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
+	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
 	imshow("读取视频", frame);
 }
 int main()
