@@ -13,6 +13,7 @@ public:
 	void set_target(int x, int y);
 	void goal_target(int real_x, int real_y);
 	void show_volts();
+	CSerialPort* get_serial_port();
 private:
 	CSerialPort comport;
 	Pid_control pid_x;

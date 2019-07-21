@@ -123,6 +123,11 @@ void ZhenjingControlor::show_volts()
 {
 	cout << "Volt: x: " << this->ADC_DV_X << " y: " << this->ADC_DV_Y << endl;
 }
+
+CSerialPort* ZhenjingControlor::get_serial_port()
+{
+	return &this->comport;
+}
 	
 ZhenjingControlor::ZhenjingControlor(int port)
 {

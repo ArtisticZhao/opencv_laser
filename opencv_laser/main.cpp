@@ -29,7 +29,7 @@ using namespace std;
 int width = 0;
 int height = 0;
 ZhenjingControlor zj_ctrl(ZHENJINGCOM);
-LaserCtrlor lz_ctrl(JIGUANGCOM);
+LaserCtrlor lz_ctrl(zj_ctrl.get_serial_port());
 vector<double> xyz_points;
 vector<double> xyz_back;
 vector<double> uvs;
@@ -115,8 +115,10 @@ int main()
 	{
 		measure_lazer();
 		key = waitKey(1);	//延时30
+		std::cout << key << std::endl;
 		if (key != -1) {
 			zj_ctrl.zhenjing_control(key);
+			lz_ctrl.setduty(key);  // q e 改变大小
 			if (key == 'j') {
 				jia_picture = imread("j.bmp", IMREAD_UNCHANGED);
 				namedWindow("边缘提取", WINDOW_NORMAL);
@@ -143,7 +145,7 @@ int main()
 			else if (key == 'p') {
 				// take photo
 				imwrite("1.bmp", frame);
-				cout << "[INFO] image saved!" << endl;
+				std::cout << "[INFO] image saved!" << std::endl;
 			}
 			else if (key == 'm') {
 				// new frame
