@@ -41,13 +41,14 @@ double d3[3];
 double uv[2];
 int flag = 0;  // 存储图片大小标志位
 Mat frame_dark;
+Mat frame;
 VideoCapture capture(CAMERA);
 
 void show_up(ifstream& yan_file);
 void test_point(Mat& origin, vector<Point2d>& points);
 
 void measure_lazer() {
-	Mat frame;
+	
 	vector<Point2d> points;
 #ifdef CHAFEN
 	// light up laser
@@ -83,13 +84,13 @@ void measure_lazer() {
 		//画出所选区域
 		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
 		//cout << points[0].x << " " << points[0].y << endl;
-		cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
+		//cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
 		// calc xyz
 		//zj_ctrl.goal_target(points[0].x, points[0].y);
 		zmeasure(points[0].x -width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
 		uv[0] = points[0].x / width;
 		uv[1] = points[0].y / height;
-		printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+		//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 	}
 	//test_point(frame);
 	// draw cross
@@ -141,7 +142,7 @@ int main()
 			}
 			else if (key == 'p') {
 				// take photo
-				imwrite("1.bmp", frame_dark);
+				imwrite("1.bmp", frame);
 				cout << "[INFO] image saved!" << endl;
 			}
 			else if (key == 'm') {

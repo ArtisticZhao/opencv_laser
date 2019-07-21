@@ -124,6 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CCenters.h" />
     <ClInclude Include="CSerialPort.h" />
     <ClInclude Include="delaunay.h" />
     <ClInclude Include="edge.h" />
@@ -139,6 +140,7 @@
     <ClInclude Include="zhenjing_control.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCenters.cpp" />
     <ClCompile Include="CSerialPort.cpp" />
     <ClCompile Include="delaunay.cpp" />
     <ClCompile Include="edge.cpp" />
