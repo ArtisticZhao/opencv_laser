@@ -21,10 +21,10 @@ bool isRoundcontour(vector<Point>& contour){
 	perimeter = arcLength(contour, true);
 	area = contourArea(contour, false);
 	area_c = (perimeter * perimeter) / (4 * 3.1415);
-	if (area_c / area < 1.5) {
+	if (area_c / area < 2) {
 		return true;
 	}else {
-		cout << "area_c / area = " << area_c / area << endl;
+		//cout << "area_c / area = " << area_c / area << endl;
 		return false;
 	}
 }

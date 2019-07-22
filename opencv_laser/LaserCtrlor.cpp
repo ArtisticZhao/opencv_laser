@@ -5,7 +5,8 @@ using namespace std;
 LaserCtrlor::LaserCtrlor(CSerialPort* com)
 {
 	this->comport = com;
-	duty = 50;
+	duty = 5;
+	this->laser_PWM();
 }
 void LaserCtrlor::setduty(int key)
 {
@@ -16,6 +17,7 @@ void LaserCtrlor::setduty(int key)
 		if (duty < 0) {
 			duty = 100;
 		}
+		cout << "laser duty: " << duty << endl;
 		laser_PWM();
 		break;
 	case 'e':
@@ -23,6 +25,7 @@ void LaserCtrlor::setduty(int key)
 		if (duty > 100) {
 			duty = 0;
 		}
+		cout << "laser duty: " << duty << endl;
 		laser_PWM();
 		break;
 	default:

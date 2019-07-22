@@ -1,4 +1,9 @@
 #include "PlanB.h"
+#include <iostream>
+#include <fstream>
+#include <opencv.hpp>
+using namespace std;
+using namespace cv;
 void PlanB::find(Vector3d a1, Vector3d a2, Vector3d b1, Vector3d b2)
 {
 	double c, ar, f, d;
@@ -80,14 +85,61 @@ void PlanB::move(Vector3d j, int* angles)
 	b3(2) = j(2);
 	b3(3) = 1;
 	pb = t * b3;
-	arx = atan(pb(0) / pb(1));
+	arx = atan((pb(0) - 21) / pb(1));
 	ary = atan(pb(2) / pb(1));
 	thx = arx / pi * 180;
 	thy = ary / pi * 180;
-	vx = (thx / 2 - 90) * 0.8;
-	vy = (thy / 2 - 90) * 0.8;
+	vx = (thx / 2) * 0.8;
+	vy = (thy / 2) * 0.8;
 	bix = vx / 10 * 32767;
 	biy = vy / 10 * 32767;
 	angles[0] = (int)bix;
 	angles[1] = (int)biy;
+}
+
+void PlanB::add_base_point(Vector3d base)
+{	
+	this->base_points[base_point_count] = base;
+	base_point_count++;
+	if (base_point_count == 2) {
+		this->find(origin_points[0], origin_points[1], base_points[0], base_points[1]);
+		
+		cout << origin_points[0] << endl;
+		cout << origin_points[1] << endl;
+		cout << base_points[0] << endl;
+		cout << base_points[1] << endl;
+	}
+}
+
+void PlanB::calc()
+{
+	//this->find(base_points[0], base_points[1], origin_points[0], origin_points[1]);
+	// 读取原始点
+	char cmd[100];
+	ifstream origin_file;
+	origin_file.open("data/origin_points.txt");
+	char* p;
+	double d3[3];
+	int angles[2];
+	while (origin_file.getline(cmd, 100)) {
+		p = cmd;
+		d3[0] = stod(p);
+		p = strchr(cmd, ' ');
+		p++;
+		d3[1] = stod(p);
+		p = strchr(cmd, ' ');
+		p++;
+		d3[2] = stod(p);
+		cout << "read in " << d3[0] << " " << d3[1] << " " << d3[2] << endl;
+		// 计算新的转角
+		this->move(Vector3d(d3[0], d3[1], d3[2]), angles);
+		cout << "go: x " << angles[0] << " y " << angles[1] << endl;
+		this->p_zhenjingctrl->goto_volt(angles[0], angles[1]);
+		
+	}
+}
+
+void PlanB::set_zj_ctrl(ZhenjingControlor* zjp)
+{
+	this->p_zhenjingctrl = zjp;
 }

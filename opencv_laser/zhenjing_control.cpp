@@ -44,7 +44,7 @@ void ZhenjingControlor::zhenjing_control(int key)
 		break;
 	}
 	if (show_flag) {  // 当只有移动光点的时候才显示回显
-		cout << "x: " << ADC_DV_X << "y: " << ADC_DV_Y << endl;
+		//cout << "x: " << ADC_DV_X << "y: " << ADC_DV_Y << endl;
 		unsigned char temp[5];
 		temp[3] = ADC_DV_X >> 8 & 0xff;
 		temp[4] = ADC_DV_X & 0xff;
@@ -77,7 +77,9 @@ void ZhenjingControlor::goto_volt(int x, int y)
 	temp[0] = 0xaa;
 	// send comport
 	//printf("key: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
+	cv::waitKey(100);
 	this->comport.WriteData(temp, 5);
+	cv::waitKey(100);
 	// update angle
 	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
 	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
