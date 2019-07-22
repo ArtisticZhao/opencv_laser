@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_PropertySheetDisplayName>Microsoft.Cpp.x64.user</_PropertySheetDisplayName>
-    <IncludePath>D:\opencv\build\include;D:\opencv\build\include\opencv2;$(IncludePath)</IncludePath>
+    <IncludePath>E:\WorkShop\openGL\eigen-eigen-323c052e1731;D:\opencv\build\include;D:\opencv\build\include\opencv2;$(IncludePath)</IncludePath>
     <LibraryPath>D:\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>

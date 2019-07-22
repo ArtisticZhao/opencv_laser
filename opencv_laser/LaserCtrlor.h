@@ -7,7 +7,7 @@ public:
 
 	void laser_on();
 	void laser_off();
-	void laser_PWM(int duty);
+	void laser_PWM();
 	void setduty(int key);
 private:
 	CSerialPort *comport;

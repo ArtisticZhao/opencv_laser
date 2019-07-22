@@ -24,6 +24,7 @@ bool isRoundcontour(vector<Point>& contour){
 	if (area_c / area < 1.5) {
 		return true;
 	}else {
+		cout << "area_c / area = " << area_c / area << endl;
 		return false;
 	}
 }

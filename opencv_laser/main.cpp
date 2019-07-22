@@ -1,8 +1,7 @@
 #define CAMERA 0
 #define ZHENJINGCOM 5
-#define JIGUANGCOM 26
-
-//#define CHAFEN
+#define DELAY 150
+#define CHAFEN
 
 #include <iostream>  
 #include <fstream>
@@ -53,14 +52,12 @@ void measure_lazer() {
 #ifdef CHAFEN
 	// light up laser
 	lz_ctrl.laser_on();
-	Sleep(85);
+	Sleep(DELAY);
 	capture >> frame;
-	//Sleep(50);
 	// turn off laser
 	lz_ctrl.laser_off();
-	Sleep(85);
+	Sleep(DELAY);
 	capture >> frame_dark;
-	//Sleep(50);
 	if (flag == 0) {
 		flag = 1;
 		width = frame.size().width;
@@ -114,16 +111,26 @@ int main()
 	while (key != 'q')
 	{
 		measure_lazer();
-		key = waitKey(1);	//延时30
-		std::cout << key << std::endl;
+		key = waitKey(1);
 		if (key != -1) {
-			zj_ctrl.zhenjing_control(key);
+			zj_ctrl.zhenjing_control(key); // 1 2 3 4 5 w a s d
 			lz_ctrl.setduty(key);  // q e 改变大小
 			if (key == 'j') {
 				jia_picture = imread("j.bmp", IMREAD_UNCHANGED);
 				namedWindow("边缘提取", WINDOW_NORMAL);
 				imshow("边缘提取", jia_picture);
 			}
+			else if (key == 'y') {
+				// 演剧本
+				show_up(yan_file);
+			}
+			// 拍照片
+			else if (key == 'p') {
+				// take photo
+				imwrite("1.bmp", frame);
+				std::cout << "[INFO] image saved!" << std::endl;
+			}
+			// 添加新点
 			else if (key == 'v') {
 				// add point
 				xyz_points.push_back(d3[0]);
@@ -138,15 +145,36 @@ int main()
 				uvs_back.push_back(uv[1]);
 				printf("[INFO]count %d point x:%f, y:%f, z:%f  u:%f, v:%f\n", uvs_back.size()/2,d3[0], d3[1], d3[2], uv[0], uv[1]);
 			}
-			else if (key == 'y') {
-				// 演剧本
-				show_up(yan_file);
+			// 显示信息
+			else if (key == 'i') {
+				// show info
+				cout << "[INFO] count is " << xyz_back.size() / 3 << endl;
+				zj_ctrl.show_volts();
 			}
-			else if (key == 'p') {
-				// take photo
-				imwrite("1.bmp", frame);
-				std::cout << "[INFO] image saved!" << std::endl;
+			// 寻找旧点: 上一个
+			else if (key == 'z') {
+				readd_index--;
+				cout << "[INFO] re_index is " << readd_index << " total: " << xyz_back.size() / 3 << endl;
 			}
+			// 寻找旧点: 下一个
+			else if (key == 'x') {
+				readd_index++;
+				cout << "[INFO] re_index is " << readd_index << " total: " << xyz_back.size() / 3 << endl;
+			}
+			// 添加旧点
+			else if (key == 'c') {
+				// re add
+				// add point
+				readd_index--;
+				xyz_points.push_back(xyz_back.at(readd_index * 3));
+				xyz_points.push_back(xyz_back.at(readd_index * 3 + 1));
+				xyz_points.push_back(xyz_back.at(readd_index * 3 + 2));
+
+				uvs.push_back(uvs_back.at(readd_index * 2));
+				uvs.push_back(uvs_back.at(readd_index * 2 + 1));
+				printf("[INFO]point x:%f, y:%f, z:%f  u:%f, v:%f\n", xyz_points.at(readd_index * 3), xyz_points.at(readd_index * 3 + 1), xyz_points.at(readd_index * 3 + 2), uvs.at(readd_index * 2), uvs.at(readd_index * 2 + 1));
+			}
+			// 将已添加的点创建一个新的平面
 			else if (key == 'm') {
 				// new frame
 				cout << "points from " << xyz_index << " to " << xyz_points.size() / 3 << endl;
@@ -157,7 +185,7 @@ int main()
 				}
 				Delaunay triangulation;
 				vector<Triangle> triangles = triangulation.triangulate(dt_points);
-				cout <<"find triangles: "<< triangles.size() << endl;
+				cout << "find triangles: " << triangles.size() << endl;
 				if (triangles.size() > 0) {
 					for (int i = 0; i < triangles.size(); i++) {
 						double find_x = triangles.at(i).a->x;
@@ -183,11 +211,14 @@ int main()
 					xyz_index = xyz_points.size();
 				}
 			}
+			// 保存obj模型
 			else if (key == 'o') {
 				// save obj
 				ofstream outfile;
 				outfile.open("1.obj");
 				int temp1, temp2;
+				// mtllib
+				outfile << "mtllib testvt.mtl" << endl;
 				// v
 				for (int i = 0; i < xyz_points.size(); i+=3) {
 					temp1 = i + 1;
@@ -208,6 +239,8 @@ int main()
 						<< frames.at(i).vn[1] << " "
 						<< frames.at(i).vn[2] << endl;
 				}
+				// use mtl
+				outfile << "usemtl xxx" << endl;
 				// f
 				outfile << "s off" << endl;
 				for (int i = 0; i < frames.size(); i++) {
@@ -220,31 +253,7 @@ int main()
 				outfile.close();
 				cout << "[INFO] obj saved" << endl;
 			}
-			else if (key == 'i') {
-				// show info
-				cout << "[INFO] count is " << xyz_back.size()/3 << endl;
-				zj_ctrl.show_volts();
-			}
-			else if (key == 'z') {
-				readd_index--;
-				cout << "[INFO] re_index is " << readd_index << " total: " << xyz_back.size()/3 << endl;
-			}
-			else if (key == 'x') {
-				readd_index++;
-				cout << "[INFO] re_index is " << readd_index << " total: "<< xyz_back.size()/3 << endl;
-			}
-			else if (key == 'c') {
-				// re add
-				// add point
-				readd_index--;
-				xyz_points.push_back(xyz_back.at(readd_index * 3));
-				xyz_points.push_back(xyz_back.at(readd_index * 3 + 1));
-				xyz_points.push_back(xyz_back.at(readd_index * 3 + 2));
-
-				uvs.push_back(uvs_back.at(readd_index * 2));
-				uvs.push_back(uvs_back.at(readd_index * 2 + 1));
-				printf("[INFO]point x:%f, y:%f, z:%f  u:%f, v:%f\n", xyz_points.at(readd_index * 3), xyz_points.at(readd_index * 3 + 1), xyz_points.at(readd_index * 3 + 2), uvs.at(readd_index * 2), uvs.at(readd_index * 2 + 1));
-			}
+			// 根据文档转动振镜
 			else if (key == 'g') {
 				// read cmd
 				ifstream infile;
