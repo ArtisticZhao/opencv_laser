@@ -33,6 +33,8 @@ public:
 	void add_old_point(int index);
 	void create_new_frame();
 	void save_obj();
-	int find_point(double x);
+	int find_point(double x, double y, int pi1, int pi2);
+	Vector3d calc_normal_vector(int a_index, int b_index, int c_index);
+	int find_max_index(Vector3d vnn);
 	void point_infos();
 };

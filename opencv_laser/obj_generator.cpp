@@ -1,6 +1,7 @@
 #include "obj_generator.h"
 #include "vector2.h"
 #include "delaunay.h"
+#include "triangle.h"
 #include <fstream>
 
 
@@ -27,21 +28,53 @@ void OBJ_Model::create_new_frame()
 	}
 	cout << endl;
 	
-	//使用 DT 算法对多边形进行分形
+	//----------使用 DT 算法对多边形进行分形
+
+	
+	if (this->current_frame_index.size() < 3) {
+		cout << "[ERROR] 当前平面的点数小于3!" << endl;
+		vector<int>().swap(current_frame_index); // 清空当前平面vector
+		return;
+	}
+	// 首先随便估算下该平面的法向量
+	Vector3d vnn = this->calc_normal_vector(this->current_frame_index.at(0), this->current_frame_index.at(1), this->current_frame_index.at(2));
+	// 找到平面法向量的最大值的位置, 这是投影方向
+	int direction = this->find_max_index(vnn);
+	int projection_index1 = 0;
+	int projection_index2 = 0;
+	// 根据投影方向 找到索引值
+	switch (direction)
+	{
+	case 0:
+		projection_index1 = 1;
+		projection_index2 = 2;
+		break;
+	case 1:
+		projection_index1 = 0;
+		projection_index2 = 2;
+		break;
+	case 2:
+		projection_index1 = 0;
+		projection_index2 = 1;
+		break;
+	default:
+		break;
+	}
 	vector<Vector2> dt_points;
+	// 根据投影方向 投影三角形
 	for (int i = 0; i < this->current_frame_index.size(); i++) {
-		dt_points.push_back(Vector2{ this->points.at(current_frame_index.at(i))(0), this->points.at(current_frame_index.at(i))(2) });// only use x,y to dt
+		dt_points.push_back(Vector2{ this->points.at(current_frame_index.at(i))(projection_index1), this->points.at(current_frame_index.at(i))(projection_index2) });
 	}
 	Delaunay triangulation;
 	vector<Triangle> triangles = triangulation.triangulate(dt_points);
 	cout << "find triangles: " << triangles.size() << endl;
 	if (triangles.size() > 0) {
 		for (int i = 0; i < triangles.size(); i++) {
-			int a_index = this->find_point(triangles.at(i).a->x);
-			int b_index = this->find_point(triangles.at(i).b->x);
-			int c_index = this->find_point(triangles.at(i).c->x);
+			int a_index = this->find_point(triangles.at(i).a->x, triangles.at(i).a->y, projection_index1, projection_index2);
+			int b_index = this->find_point(triangles.at(i).b->x, triangles.at(i).b->y, projection_index1, projection_index2);
+			int c_index = this->find_point(triangles.at(i).c->x, triangles.at(i).c->y, projection_index1, projection_index2);
 			// 计算平面法向量
-			Vector3d vn = (this->points.at(a_index) - this->points.at(b_index)).cross(this->points.at(c_index) - this->points.at(b_index));
+			Vector3d vn = this->calc_normal_vector(a_index, b_index, c_index);
 			this->triangle_frame.push_back(OBJ_Triangle{ vn, {a_index, b_index, c_index} });
 		}
 	}
@@ -86,16 +119,36 @@ void OBJ_Model::save_obj()
 	cout << "[INFO] obj saved" << endl;
 }
 
-// 给DT算法之后用, 用于找出对应的顶点号, 使用x坐标
-int OBJ_Model::find_point(double x)
+// 给DT算法之后用, 用于找出对应的顶点号, 只需要在current frame index 中索引的位置查找, 加快效率
+int OBJ_Model::find_point(double x, double y, int pi1, int pi2)
 {
 	int index = 0;
-	for (index = 0; index < this->points.size(); index++) {
-		if (this->points.at(index)(0) == x) {
-			break;
+	for (auto iter = this->current_frame_index.begin(); iter != this->current_frame_index.end(); iter++){
+		index = (*iter);
+		if (this->points.at(index)(pi1) == x && this->points.at(index)(pi2) == y) {
+			return index;
 		}
 	}
-	return index;
+	cout << "[ERROR] 未找到的顶点" << endl;
+	return 0;
+}
+// 计算平面法向量
+Vector3d OBJ_Model::calc_normal_vector(int a_index, int b_index, int c_index)
+{
+	return (this->points.at(a_index) - this->points.at(b_index)).cross(this->points.at(c_index) - this->points.at(b_index));
+}
+
+int OBJ_Model::find_max_index(Vector3d vnn) {
+	double t;
+	double max = (t = vnn(0) >= vnn(1) ? vnn(0) : vnn(1)) >= vnn(2) ? t : vnn(2);
+	// debug
+	cout << "max is " << max << endl << vnn << endl;
+	if (max == vnn(0))
+		return 0;
+	if (max == vnn(1))
+		return 1;
+	if (max == vnn(2))
+		return 2;
 }
 
 void OBJ_Model::point_infos()
