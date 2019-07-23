@@ -124,7 +124,9 @@ int main()
 			// 拍照片
 			else if (key == 'p') {
 				// take photo
-				imwrite("data/1.png", frame_dark);
+				Mat flip_frame;
+				flip(frame_dark, flip_frame, 0);
+				imwrite("data/1.png", flip_frame);
 				std::cout << "[INFO] image saved!" << std::endl;
 			}
 			// 添加新点
@@ -136,8 +138,8 @@ int main()
 			// 显示信息
 			else if (key == 'i') {
 				// show info
-				objmodel.point_infos();
 				zj_ctrl.show_volts();
+				objmodel.point_infos();
 			}
 			//// 寻找旧点: 上一个
 			//else if (key == 'z') {
