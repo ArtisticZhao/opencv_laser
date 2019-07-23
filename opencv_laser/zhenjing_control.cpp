@@ -108,8 +108,29 @@ void ZhenjingControlor::goal_target(int real_x, int real_y)
 
 	this->real_x = real_x;
 	this->real_y = real_y;
-	ADC_DV_X = ADC_DV_X + pid_x.PID_realize(target_x, real_x);
-	ADC_DV_Y = ADC_DV_Y + pid_y.PID_realize(target_y, real_y);
+	int step_x = pid_x.PID_realize(target_x, real_x);
+	int step_y = pid_y.PID_realize(target_y, real_y);
+	int ctrl_val = ADC_DV_X + step_x;
+	int ctrl_val_y = ADC_DV_Y + step_y;
+	// 对其进行限幅
+	if (step_x > 0 && ctrl_val > 32767) {
+		ADC_DV_X = 32760;
+	}
+	else if (step_x < 0 && ctrl_val < -32768) {
+		ADC_DV_X = -32760;
+	}
+	else {
+		ADC_DV_X = ctrl_val;
+	}
+	if (step_y > 0 && ctrl_val_y > 32767) {
+		ADC_DV_Y = 32767;
+	}
+	else if (step_y < 0 && ctrl_val_y < -32768) {
+		ADC_DV_Y = -32767;
+	}
+	else {
+		ADC_DV_Y = ctrl_val_y;
+	}
 	unsigned char temp[5];
 	temp[3] = ADC_DV_X >> 8 & 0xff;
 	temp[4] = ADC_DV_X & 0xff;
@@ -137,8 +158,8 @@ CSerialPort* ZhenjingControlor::get_serial_port()
 	
 ZhenjingControlor::ZhenjingControlor(int port)
 {
-	pid_x.PID_init(15, 0, 0);
-	pid_y.PID_init(15, 0, 0);
+	pid_x.PID_init(30, 1, 0, 'x');
+	pid_y.PID_init(30, 1, 0, 'y');
 	bool res;
 	res = this->comport.InitPort(port, CBR_115200);
 	if (!res) {

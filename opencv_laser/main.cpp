@@ -29,21 +29,23 @@ int width = 0;
 int height = 0;
 ZhenjingControlor zj_ctrl(ZHENJINGCOM);
 LaserCtrlor lz_ctrl(zj_ctrl.get_serial_port());
-
+double point_x, point_y;
 double d3[3];
 double uv[2];
 int flag = 0;  // 存储图片大小标志位
 Mat frame_dark;
 Mat frame;
 VideoCapture capture(CAMERA);
-
-void show_up(ifstream& yan_file);
+bool is_pid = false;
+bool is_pid_y = false;
+//void show_up(ifstream& yan_file);
 void test_point(Mat& origin, vector<Point2d>& points);
 
 void measure_lazer() {
 	
-	vector<Point2d> points;
+	
 #ifdef CHAFEN
+	vector<Point2d> points;
 	// light up laser
 	lz_ctrl.laser_on();
 	Sleep(DELAY);
@@ -81,6 +83,8 @@ void measure_lazer() {
 		zmeasure(points[0].x -width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
 		uv[0] = points[0].x / width;
 		uv[1] = points[0].y / height;
+		point_x = points[0].x;
+		point_y = points[0].y;
 		//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
 	}
 	//test_point(frame);
@@ -98,6 +102,7 @@ int main()
 	// obj存储类
 	OBJ_Model objmodel;
 	PlanB pb;
+	pb.set_zj_ctrl(&zj_ctrl);
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
@@ -108,6 +113,9 @@ int main()
 	while (key != 'q')
 	{
 		measure_lazer();
+		if (is_pid || is_pid_y) {
+			zj_ctrl.goal_target(point_x, point_y);
+		}
 		key = waitKey(1);
 		if (key != -1) {
 			zj_ctrl.zhenjing_control(key); // 1 2 3 4 5 w a s d
@@ -191,6 +199,13 @@ int main()
 			}
 			else if (key == 'n') {
 				pb.calc();
+			}
+			else if (key == 'h') {
+				is_pid = true;
+				is_pid_y = true;
+			}else if (key == 'H') {
+				is_pid = false;
+				is_pid_y = false;
 			}
 		}
 	}

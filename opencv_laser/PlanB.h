@@ -15,7 +15,7 @@ private:
 	Matrix4d t;
 	short base_point_count = 0;
 	Vector3d base_points[2];
-	Vector3d origin_points[2] = {Vector3d(19.6221, 51.7276, -6.15337), Vector3d(23.9508, 58.2663, -5.28088)};
+	Vector3d origin_points[2] = {Vector3d(19.62, 51.73, -6.15), Vector3d(23.9508, 58.2663, -5.28088)};
 	bool is_calc_mode = false;  // 当第三次进入 add_base_point 函数之后, 进入计算模式, 将自动进入计算模式
 	ZhenjingControlor* p_zhenjingctrl;
 };

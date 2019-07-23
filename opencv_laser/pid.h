@@ -13,13 +13,14 @@ class Pid_control
 {
 public:
 
-	void PID_init(float kp, float ki, float kd);
+	void PID_init(float kp, float ki, float kd, char name);
 
 	float PID_realize(float end_x, float real_x);
 private:
-
+	char name;
 	int index;
-
+	int count = 0;
 	pid pid;
+	double kp;
 
 };

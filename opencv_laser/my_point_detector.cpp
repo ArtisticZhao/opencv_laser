@@ -70,7 +70,7 @@ void get_point(Mat& origin_light, Mat& origin_dark, vector<Point2d>& points) {
 		}
 
 		//画出所选区域
-		drawContours(sub_gray, contours, i, Scalar(0, 255, 0));
+		//drawContours(sub_gray, contours, i, Scalar(0, 255, 0));
 
 		//计算光点位置
 		m = moments(contours[i], true);
