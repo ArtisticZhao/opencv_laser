@@ -5,11 +5,12 @@
 #include <fstream>
 
 
-void OBJ_Model::add_point(Vector3d new_point, Vector2d new_uv)
+void OBJ_Model::add_point(Vector3d new_point, Vector2d new_uv, Vector2i volt)
 {
 	this->points.push_back(new_point);
 	this->uvs.push_back(new_uv);
 	this->current_frame_index.push_back(this->uvs.size() - 1);
+	this->volts.push_back(volt);
 	cout << "[INFO]add new point: " << this->uvs.size() - 1 << endl;
 	cout << new_point(0) << " " << new_point(1) << " " << new_point(2) << endl;
 }
@@ -158,3 +159,52 @@ void OBJ_Model::point_infos()
 		<< "triangles size" << this->triangle_frame.size() << endl;
 	cout << "----------------------" << endl;
 }
+
+void OBJ_Model::frame_from_file()
+{
+	
+	ifstream frame_file;
+	frame_file.open("data/frame.txt");
+	char cmd[100];
+	char* p;
+	vector<int>().swap(current_frame_index); // 清空当前平面vector
+	while (frame_file.getline(cmd, 100)) {
+		
+		p = cmd;
+		while (*p != EOF) {
+			this->current_frame_index.push_back(stod(p));
+			p = strchr(p, ' ');
+			if (p == NULL) {
+				break;
+			}
+			p++;
+		}
+		this->create_new_frame();
+	}
+	this->save_obj();
+}
+
+void OBJ_Model::save_volts()
+{
+	ofstream outfile;
+	outfile.open("data/volts.txt");
+	// vt uv纹理数据
+	for (auto iter = this->volts.begin(); iter != this->volts.end(); iter++) {
+		outfile<< (*iter)(0) << " "
+			<< (*iter)(1) << endl;
+	}
+	// 关闭打开的文件
+	outfile.close();
+	cout << "[INFO] volts saved" << endl;
+}
+
+void OBJ_Model::delete_point()
+{
+	this->points.pop_back();
+	this->uvs.pop_back();
+	this->volts.pop_back();
+	this->current_frame_index.pop_back();
+	cout << "[INFO]delete a point: " << this->points.size() + 1 << endl;
+}
+
+

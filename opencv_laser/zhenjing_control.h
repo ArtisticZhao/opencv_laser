@@ -16,6 +16,8 @@ public:
 	void goal_target(int real_x, int real_y, bool is_pid_x, bool is_pid_y, bool has_point);
 	void show_volts();
 	CSerialPort* get_serial_port();
+	int get_x();
+	int get_y();
 private:
 	CSerialPort comport;
 	Pid_control pid_x;

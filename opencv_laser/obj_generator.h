@@ -28,8 +28,9 @@ private:
 	vector<Vector2d> uvs;
 	vector<int> current_frame_index;  // 当前平面索引
 	vector<OBJ_Triangle> triangle_frame;  //三角化平面
+	vector<Vector2i> volts;
 public:
-	void add_point(Vector3d new_point, Vector2d new_uv);
+	void add_point(Vector3d new_point, Vector2d new_uv, Vector2i volt);
 	void add_old_point(int index);
 	void create_new_frame();
 	void save_obj();
@@ -37,4 +38,7 @@ public:
 	Vector3d calc_normal_vector(int a_index, int b_index, int c_index);
 	int find_max_index(Vector3d vnn);
 	void point_infos();
+	void frame_from_file();
+	void save_volts();
+	void delete_point();
 };

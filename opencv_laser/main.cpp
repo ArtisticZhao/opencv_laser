@@ -49,13 +49,14 @@ bool measure_lazer() {
 #ifdef CHAFEN
 	
 	// light up laser
-	lz_ctrl.laser_on();
-	Sleep(DELAY);
+	
+	//Sleep(DELAY);
 	capture >> frame;
 	// turn off laser
 	lz_ctrl.laser_off();
 	Sleep(DELAY);
 	capture >> frame_dark;
+	lz_ctrl.laser_on();
 	if (flag == 0) {
 		flag = 1;
 		width = frame.size().width;
@@ -146,7 +147,8 @@ int main()
 			else if (key == 'v') {
 				Vector3d point(d3[0], d3[1], d3[2]);
 				Vector2d v_uv(uv[0], uv[1]);
-				objmodel.add_point(point, v_uv);
+				Vector2i volts(zj_ctrl.get_x(), zj_ctrl.get_y());
+				objmodel.add_point(point, v_uv, volts);
 			}
 			// 显示信息
 			else if (key == 'i') {
@@ -171,6 +173,10 @@ int main()
 				cout << "输入index:";
 				cin >> index;
 				objmodel.add_old_point(index);
+			}
+			else if (key == 'x')
+			{
+				objmodel.delete_point();
 			}
 			// 将已添加的点创建一个新的平面
 			else if (key == 'm') {
@@ -205,12 +211,22 @@ int main()
 			else if (key == 'n') {
 				pb.calc();
 			}
-			else if (key == 'h') {
+			else if (key == 'h') 
+			{
 				is_pid = true;
 				is_pid_y = true;
-			}else if (key == 'H') {
+			}
+			else if (key == 'H') 
+			{
 				is_pid = false;
 				is_pid_y = false;
+			}
+			else if (key == 'u') {
+				objmodel.frame_from_file();
+			}
+			// save volts
+			else if (key == 'l') {
+				objmodel.save_volts();
 			}
 		}
 	}

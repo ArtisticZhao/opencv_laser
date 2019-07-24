@@ -11,16 +11,16 @@ void ZhenjingControlor::zhenjing_control(int key)
 	switch (key)
 	{
 	case '1':
-		step = 10;
+		step = 100;
 		break;
 	case '2':
-		step = 100;
+		step = 200;
 		break;
 	case '3':
 		step = 1000;
 		break;
 	case '4':
-		step = 10000;
+		step = 5000;
 		break;
 	case '5':
 		step = 5000;
@@ -166,6 +166,7 @@ void ZhenjingControlor::goal_target(int real_x, int real_y, bool is_pid_x, bool 
 	if (is_pid_x || is_pid_y) {
 		cv::waitKey(100);
 		this->comport.WriteData(temp, 5);
+		cv::waitKey(100);
 		// update angle
 		this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
 		this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
@@ -180,6 +181,16 @@ void ZhenjingControlor::show_volts()
 CSerialPort* ZhenjingControlor::get_serial_port()
 {
 	return &this->comport;
+}
+
+int ZhenjingControlor::get_x()
+{
+	return this->ADC_DV_X;
+}
+
+int ZhenjingControlor::get_y()
+{
+	return this->ADC_DV_Y;
 }
 	
 ZhenjingControlor::ZhenjingControlor(int port)
