@@ -41,9 +41,9 @@ bool is_pid_y = false;
 //void show_up(ifstream& yan_file);
 void test_point(Mat& origin, vector<Point2d>& points);
 
-void measure_lazer() {
+bool measure_lazer() {
 	
-	
+	bool has_point = false;
 #ifdef CHAFEN
 	vector<Point2d> points;
 	// light up laser
@@ -73,6 +73,8 @@ void measure_lazer() {
 #endif
 	//遍历边缘
 	if (points.size() != 0) {
+		has_point = true;
+		// 选择轮廓范围: 选择最大值
 		// measure			
 		//画出所选区域
 		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
@@ -92,6 +94,7 @@ void measure_lazer() {
 	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
 	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
 	imshow("读取视频", frame);
+	return has_point;
 }
 int main()
 {
@@ -109,10 +112,10 @@ int main()
 	namedWindow("读取视频", WINDOW_NORMAL);
 	int key = 0;
 	setMouseCallback("读取视频", on_mouse, NULL);
-	
+	bool has_p;
 	while (key != 'q')
 	{
-		measure_lazer();
+		has_p = measure_lazer();
 		if (is_pid || is_pid_y) {
 			zj_ctrl.goal_target(point_x, point_y);
 		}

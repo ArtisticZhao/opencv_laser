@@ -40,7 +40,7 @@ float Pid_control::PID_realize(float end, float real)
 	{
 		count++;
 		if (count > 5) {
-			this->pid.Kp = 60;
+			this->pid.Kp = 30;
 		}
 	}
 	pid.target = end;

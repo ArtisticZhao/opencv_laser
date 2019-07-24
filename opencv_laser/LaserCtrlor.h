@@ -11,6 +11,6 @@ public:
 	void setduty(int key);
 private:
 	CSerialPort *comport;
-	int duty;
+	double duty;
 };
 

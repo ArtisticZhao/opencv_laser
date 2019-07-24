@@ -158,8 +158,8 @@ CSerialPort* ZhenjingControlor::get_serial_port()
 	
 ZhenjingControlor::ZhenjingControlor(int port)
 {
-	pid_x.PID_init(30, 1, 0, 'x');
-	pid_y.PID_init(30, 1, 0, 'y');
+	pid_x.PID_init(30, 1, 0.25, 'x');
+	pid_y.PID_init(30, 1, 0.25, 'y');
 	bool res;
 	res = this->comport.InitPort(port, CBR_115200);
 	if (!res) {
