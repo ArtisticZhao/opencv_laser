@@ -103,15 +103,38 @@ void ZhenjingControlor::set_target(int x, int y)
 	target_y = y;
 }
 
-void ZhenjingControlor::goal_target(int real_x, int real_y)
+void ZhenjingControlor::goal_target(int real_x, int real_y, bool is_pid_x, bool is_pid_y, bool has_point)
 {
 
 	this->real_x = real_x;
 	this->real_y = real_y;
-	int step_x = pid_x.PID_realize(target_x, real_x);
-	int step_y = pid_y.PID_realize(target_y, real_y);
-	int ctrl_val = ADC_DV_X + step_x;
-	int ctrl_val_y = ADC_DV_Y + step_y;
+	int step_x = 0;
+	int step_y = 0;
+	if (is_pid_x)
+		step_x = pid_x.PID_realize(target_x, real_x);
+	if (is_pid_y)
+		step_y = pid_y.PID_realize(target_y, real_y);
+	int ctrl_val = ADC_DV_X;
+	int ctrl_val_y = ADC_DV_Y;
+	if (has_point) {
+		ctrl_val = ADC_DV_X + step_x;
+		ctrl_val_y = ADC_DV_Y + step_y;
+	}
+	else {
+		if (step_x > 0) {
+			ctrl_val += STEP;
+		}
+		else if (step_x < 0) {
+			ctrl_val -= STEP;
+		}
+		if (step_y > 0) {
+			ctrl_val_y += STEP;
+		}
+		else if (step_y < 0) {
+			ctrl_val_y -= STEP;
+		}
+	}
+	
 	// 对其进行限幅
 	if (step_x > 0 && ctrl_val > 32767) {
 		ADC_DV_X = 32760;
@@ -140,10 +163,13 @@ void ZhenjingControlor::goal_target(int real_x, int real_y)
 	temp[0] = 0xaa;
 	// send comport
 	//printf("goal: %x %x %x %x\n", temp[3], temp[2], temp[1], temp[0]);
-	this->comport.WriteData(temp, 5);
-	// update angle
-	this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
-	this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
+	if (is_pid_x || is_pid_y) {
+		cv::waitKey(100);
+		this->comport.WriteData(temp, 5);
+		// update angle
+		this->angle_x = 10.0 / 32768 * ADC_DV_X / 0.8;
+		this->angle_y = 10.0 / 32768 * ADC_DV_Y / 0.8;
+	}
 }
 
 void ZhenjingControlor::show_volts()

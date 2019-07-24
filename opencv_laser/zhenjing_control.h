@@ -2,6 +2,8 @@
 #include "CSerialPort.h"
 #include <cstdint>
 #include "pid.h"
+
+#define STEP 1000
 class ZhenjingControlor {
 public:
 	ZhenjingControlor(int port);
@@ -11,7 +13,7 @@ public:
 	double get_angle_x();
 	double get_angle_y();
 	void set_target(int x, int y);
-	void goal_target(int real_x, int real_y);
+	void goal_target(int real_x, int real_y, bool is_pid_x, bool is_pid_y, bool has_point);
 	void show_volts();
 	CSerialPort* get_serial_port();
 private:

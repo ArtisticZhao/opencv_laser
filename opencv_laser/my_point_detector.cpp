@@ -36,17 +36,17 @@ void get_point(Mat& origin_light, Mat& origin_dark, vector<Point2d>& points) {
 	cvtColor(origin_dark, origin_dark_gray, COLOR_RGB2GRAY);
 	Mat sub_gray;
 	subtract(origin_light_gray, origin_dark_gray, sub_gray);
-	namedWindow("sub", WINDOW_NORMAL);
-	namedWindow("threshold", WINDOW_NORMAL);
-	namedWindow("fliter", WINDOW_NORMAL);
-	imshow("sub", sub_gray);
+	//namedWindow("sub", WINDOW_NORMAL);
+	//namedWindow("threshold", WINDOW_NORMAL);
+	//namedWindow("fliter", WINDOW_NORMAL);
+	//imshow("sub", sub_gray);
 	//形态学
 	Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
 	// 确定二值化阈值
 	int thres = Histogram(&sub_gray);
 	// 二值化
 	threshold(sub_gray, sub_gray, thres, 255, THRESH_BINARY);
-	imshow("threshold", sub_gray);
+	//imshow("threshold", sub_gray);
 	//形态学
 	morphologyEx(sub_gray, sub_gray, MORPH_CLOSE, kernel);
 	morphologyEx(sub_gray, sub_gray, MORPH_OPEN, kernel);
@@ -54,7 +54,7 @@ void get_point(Mat& origin_light, Mat& origin_dark, vector<Point2d>& points) {
 	//namedWindow("sub", WINDOW_NORMAL);
 	//imshow("beforesub", sub_gray);
 	
-	imshow("fliter", sub_gray);
+	//imshow("fliter", sub_gray);
 	// debug
 	//imshow("sub", sub_gray);
 #ifdef _DEBUG_H_

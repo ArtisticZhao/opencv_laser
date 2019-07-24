@@ -1,6 +1,7 @@
 #define CAMERA 0
 #define ZHENJINGCOM 5
 #define DELAY 150
+
 #define CHAFEN
 
 #include <iostream>  
@@ -44,8 +45,9 @@ void test_point(Mat& origin, vector<Point2d>& points);
 bool measure_lazer() {
 	
 	bool has_point = false;
-#ifdef CHAFEN
 	vector<Point2d> points;
+#ifdef CHAFEN
+	
 	// light up laser
 	lz_ctrl.laser_on();
 	Sleep(DELAY);
@@ -82,7 +84,7 @@ bool measure_lazer() {
 		//cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
 		// calc xyz
 		//zj_ctrl.goal_target(points[0].x, points[0].y);
-		zmeasure(points[0].x -width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1090, d3, 3);
+		zmeasure(points[0].x -width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1139.175, d3, 3);
 		uv[0] = points[0].x / width;
 		uv[1] = points[0].y / height;
 		point_x = points[0].x;
@@ -117,7 +119,7 @@ int main()
 	{
 		has_p = measure_lazer();
 		if (is_pid || is_pid_y) {
-			zj_ctrl.goal_target(point_x, point_y);
+			zj_ctrl.goal_target(point_x, point_y, is_pid, is_pid_y, has_p);
 		}
 		key = waitKey(1);
 		if (key != -1) {
