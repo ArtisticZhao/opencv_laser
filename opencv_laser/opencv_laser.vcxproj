@@ -125,6 +125,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CCenters.h" />
+    <ClInclude Include="Contest.h" />
     <ClInclude Include="CSerialPort.h" />
     <ClInclude Include="delaunay.h" />
     <ClInclude Include="edge.h" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CCenters.cpp" />
+    <ClCompile Include="Contest.cpp" />
     <ClCompile Include="CSerialPort.cpp" />
     <ClCompile Include="delaunay.cpp" />
     <ClCompile Include="edge.cpp" />

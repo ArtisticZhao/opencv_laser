@@ -207,4 +207,3 @@ void OBJ_Model::delete_point()
 	cout << "[INFO]delete a point: " << this->points.size() + 1 << endl;
 }
 
-

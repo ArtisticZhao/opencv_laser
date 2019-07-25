@@ -33,6 +33,12 @@ void LaserCtrlor::setduty(int key)
 		break;
 	}
 }
+void LaserCtrlor::set_duty(double duty)
+{
+	this->duty = duty;
+	cout << "laser duty: " << duty << endl;
+	laser_PWM();
+}
 void LaserCtrlor::laser_on()
 {
 	unsigned char temp[5] = { 0xFF, 0xdc, 0xdc, 0xdc,0xdc };

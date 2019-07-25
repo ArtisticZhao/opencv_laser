@@ -63,6 +63,9 @@
     <ClInclude Include="PlanB.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Contest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -111,6 +114,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PlanB.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Contest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

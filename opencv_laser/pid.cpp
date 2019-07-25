@@ -23,7 +23,7 @@ float Pid_control::PID_realize(float end, float real)
 {
 	if (end - real<10 && end - real>-10)
 	{
-		cout << "ok" << endl;
+		//cout << "ok" << endl;
 		this->pid.Kp = this->kp;
 		if (name == 'x') {
 			is_pid = false;
@@ -44,12 +44,12 @@ float Pid_control::PID_realize(float end, float real)
 	pid.target = end;
 	pid.Actual = real;
 	pid.err = pid.target - pid.Actual;
-	cout << "-------" << this->name << "-------" << endl;
-	cout << "err: " << pid.err << endl;
+	/*cout << "-------" << this->name << "-------" << endl;
+	cout << "err: " << pid.err << endl;*/
 	pid.integral += pid.err;
 	pid.step = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
 	pid.err_last = pid.err;
-	cout <<"OUT: " << pid.step << endl;
+	//cout <<"OUT: " << pid.step << endl;
 	if (pid.step < 100 && pid.step > -100) {
 		if (pid.step > 0) {
 			pid.step = 100;

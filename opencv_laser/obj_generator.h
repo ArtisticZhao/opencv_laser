@@ -29,6 +29,7 @@ private:
 	vector<int> current_frame_index;  // 当前平面索引
 	vector<OBJ_Triangle> triangle_frame;  //三角化平面
 	vector<Vector2i> volts;
+	
 public:
 	void add_point(Vector3d new_point, Vector2d new_uv, Vector2i volt);
 	void add_old_point(int index);

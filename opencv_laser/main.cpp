@@ -21,6 +21,7 @@
 #include "obj_generator.h"
 #include "point_detector.h"
 #include "PlanB.h"
+#include "Contest.h"
 //void test_point(Mat &origin);
 
 static void on_mouse(int event, int x, int y, int flags, void* ustc);
@@ -30,6 +31,9 @@ int width = 0;
 int height = 0;
 ZhenjingControlor zj_ctrl(ZHENJINGCOM);
 LaserCtrlor lz_ctrl(zj_ctrl.get_serial_port());
+// obj存储类
+OBJ_Model objmodel;
+Contest ct;
 double point_x, point_y;
 double d3[3];
 double uv[2];
@@ -41,74 +45,19 @@ bool is_pid = false;
 bool is_pid_y = false;
 //void show_up(ifstream& yan_file);
 void test_point(Mat& origin, vector<Point2d>& points);
-
-bool measure_lazer() {
-	
-	bool has_point = false;
-	vector<Point2d> points;
-#ifdef CHAFEN
-	
-	// light up laser
-	
-	//Sleep(DELAY);
-	capture >> frame;
-	// turn off laser
-	lz_ctrl.laser_off();
-	Sleep(DELAY);
-	capture >> frame_dark;
-	lz_ctrl.laser_on();
-	if (flag == 0) {
-		flag = 1;
-		width = frame.size().width;
-		height = frame.size().height;
-		cout << "width is " << width << " height is " << height << endl;
-	}
-	get_point(frame, frame_dark, points);
-#else
-	capture >> frame;
-	test_point(frame, points);
-	if (flag == 0) {
-		flag = 1;
-		width = frame.size().width;
-		height = frame.size().height;
-		cout << "width is " << width << " height is " << height << endl;
-	}
-#endif
-	//遍历边缘
-	if (points.size() != 0) {
-		has_point = true;
-		// 选择轮廓范围: 选择最大值
-		// measure			
-		//画出所选区域
-		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
-		//cout << points[0].x << " " << points[0].y << endl;
-		//cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
-		// calc xyz
-		//zj_ctrl.goal_target(points[0].x, points[0].y);
-		zmeasure(points[0].x -width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1139.175, d3, 3);
-		uv[0] = points[0].x / width;
-		uv[1] = points[0].y / height;
-		point_x = points[0].x;
-		point_y = points[0].y;
-		//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
-	}
-	//test_point(frame);
-	// draw cross
-	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
-	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
-	imshow("读取视频", frame);
-	return has_point;
-}
+bool measure_lazer();
+void process_key(int key);
 int main()
 {
 	Mat jia_picture;
 	// 打开剧本
 	ifstream yan_file;
 	yan_file.open("data/script.txt");
-	// obj存储类
-	OBJ_Model objmodel;
-	PlanB pb;
-	pb.set_zj_ctrl(&zj_ctrl);
+	
+	/*PlanB pb;
+	pb.set_zj_ctrl(&zj_ctrl);*/
+	
+	ct.set_zhenjing_ctrl(&zj_ctrl);
 	// 通过下面两行设置像素分辨率, 设定值如果超过
 	capture.set(CAP_PROP_FRAME_WIDTH, 5000);
 	capture.set(CAP_PROP_FRAME_HEIGHT, 5000);
@@ -123,112 +72,7 @@ int main()
 			zj_ctrl.goal_target(point_x, point_y, is_pid, is_pid_y, has_p);
 		}
 		key = waitKey(1);
-		if (key != -1) {
-			zj_ctrl.zhenjing_control(key); // 1 2 3 4 5 w a s d
-			lz_ctrl.setduty(key);  // q e 改变大小
-			if (key == 'j') {
-				jia_picture = imread("data/j.bmp", IMREAD_UNCHANGED);
-				namedWindow("边缘提取", WINDOW_NORMAL);
-				imshow("边缘提取", jia_picture);
-			}
-			else if (key == 'y') {
-				// 演剧本
-				//show_up(yan_file);
-			}
-			// 拍照片
-			else if (key == 'p') {
-				// take photo
-				Mat flip_frame;
-				flip(frame_dark, flip_frame, 0);
-				imwrite("data/1.png", flip_frame);
-				std::cout << "[INFO] image saved!" << std::endl;
-			}
-			// 添加新点
-			else if (key == 'v') {
-				Vector3d point(d3[0], d3[1], d3[2]);
-				Vector2d v_uv(uv[0], uv[1]);
-				Vector2i volts(zj_ctrl.get_x(), zj_ctrl.get_y());
-				objmodel.add_point(point, v_uv, volts);
-			}
-			// 显示信息
-			else if (key == 'i') {
-				// show info
-				zj_ctrl.show_volts();
-				objmodel.point_infos();
-			}
-			//// 寻找旧点: 上一个
-			//else if (key == 'z') {
-			//	readd_index--;
-			//	cout << "[INFO] re_index is " << readd_index << " total: " << xyz_back.size() / 3 << endl;
-			//}
-			//// 寻找旧点: 下一个
-			//else if (key == 'x') {
-			//	readd_index++;
-			//	cout << "[INFO] re_index is " << readd_index << " total: " << xyz_back.size() / 3 << endl;
-			//}
-			// 添加旧点
-			else if (key == 'c') {
-				// re add
-				int index = 0;
-				cout << "输入index:";
-				cin >> index;
-				objmodel.add_old_point(index);
-			}
-			else if (key == 'x')
-			{
-				objmodel.delete_point();
-			}
-			// 将已添加的点创建一个新的平面
-			else if (key == 'm') {
-				objmodel.create_new_frame();
-			}
-			// 保存obj模型
-			else if (key == 'o') {
-				objmodel.save_obj();
-			}
-			// 根据文档转动振镜
-			else if (key == 'g') {
-				// read cmd
-				ifstream infile;
-				infile.open("data/cmd.txt");
-				char cmd[100];
-				char* p;
-				infile.getline(cmd, 100);
-				if (cmd[0] == 'g' && cmd[1] == ':') {
-					p = strchr(cmd, ':');
-					p++;
-					int x = std::stoi(p);
-					p = strchr(cmd, ',');
-					p++;
-					int y = std::stoi(p);
-					cout << "go: x " << x << " y " << y << endl;
-					zj_ctrl.goto_volt(x, y);
-				}
-			}
-			else if (key == 'b') {
-				pb.add_base_point(Vector3d(d3[0], d3[1], d3[2]));
-			}
-			else if (key == 'n') {
-				pb.calc();
-			}
-			else if (key == 'h') 
-			{
-				is_pid = true;
-				is_pid_y = true;
-			}
-			else if (key == 'H') 
-			{
-				is_pid = false;
-				is_pid_y = false;
-			}
-			else if (key == 'u') {
-				objmodel.frame_from_file();
-			}
-			// save volts
-			else if (key == 'l') {
-				objmodel.save_volts();
-			}
-		}
+		process_key(key);
 	}
 	destroyAllWindows();
 	return 0;
@@ -376,4 +220,154 @@ static void on_mouse(int event, int x, int y, int flags, void* ustc) {
 		}
 	}
 
+}
+
+bool measure_lazer() {
+
+	bool has_point = false;
+	vector<Point2d> points;
+#ifdef CHAFEN
+
+	// light up laser
+
+	//Sleep(DELAY);
+	capture >> frame;
+	// turn off laser
+	lz_ctrl.laser_off();
+	Sleep(DELAY);
+	capture >> frame_dark;
+	lz_ctrl.laser_on();
+	if (flag == 0) {
+		flag = 1;
+		width = frame.size().width;
+		height = frame.size().height;
+		cout << "width is " << width << " height is " << height << endl;
+	}
+	get_point(frame, frame_dark, points);
+#else
+	capture >> frame;
+	test_point(frame, points);
+	if (flag == 0) {
+		flag = 1;
+		width = frame.size().width;
+		height = frame.size().height;
+		cout << "width is " << width << " height is " << height << endl;
+	}
+#endif
+	//遍历边缘
+	if (points.size() != 0) {
+		has_point = true;
+		// 选择轮廓范围: 选择最大值
+		// measure			
+		//画出所选区域
+		cv::circle(frame, points[0], 5, Scalar(0, 255, 0), 5);
+		//cout << points[0].x << " " << points[0].y << endl;
+		//cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
+		// calc xyz
+		//zj_ctrl.goal_target(points[0].x, points[0].y);
+		zmeasure(points[0].x - width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1139.175, d3, 3);
+		uv[0] = points[0].x / width;
+		uv[1] = points[0].y / height;
+		point_x = points[0].x;
+		point_y = points[0].y;
+		//printf("x:%f, y:%f, z:%f\n", d3[0], d3[1], d3[2]);
+	}
+	//test_point(frame);
+	// draw cross
+	line(frame, Point2d(0, height / 2), Point2d(width, height / 2), Scalar(0, 255, 255), 1, LINE_AA);
+	line(frame, Point2d(width / 2, 0), Point2d(width / 2, height), Scalar(0, 255, 255), 1, LINE_AA);
+	imshow("读取视频", frame);
+	return has_point;
+}
+
+void process_key(int key) {
+	if (key != -1) {
+		zj_ctrl.zhenjing_control(key); // 1 2 3 4 5 w a s d
+		lz_ctrl.setduty(key);  // q e 改变大小
+		if (key == 'y') {
+			ct.show_all();
+		}
+		// 拍照片
+		else if (key == 'p') {
+			// take photo
+			Mat flip_frame;
+			flip(frame_dark, flip_frame, 0);
+			imwrite("data/1.png", flip_frame);
+			std::cout << "[INFO] image saved!" << std::endl;
+		}
+		// 添加新点
+		else if (key == 'v') {
+			Vector3d point(d3[0], d3[1], d3[2]);
+			Vector2d v_uv(uv[0], uv[1]);
+			Vector2i volts(zj_ctrl.get_x(), zj_ctrl.get_y());
+			objmodel.add_point(point, v_uv, volts);
+		}
+		// 显示信息
+		else if (key == 'i') {
+			// show info
+			zj_ctrl.show_volts();
+			objmodel.point_infos();
+		}
+		
+		// 添加旧点
+		else if (key == 'c') {
+			// re add
+			int index = 0;
+			cout << "输入index:";
+			cin >> index;
+			objmodel.add_old_point(index);
+		}
+		else if (key == 'x')
+		{
+			objmodel.delete_point();
+		}
+		// 将已添加的点创建一个新的平面
+		else if (key == 'm') {
+			objmodel.create_new_frame();
+		}
+		// 保存obj模型
+		else if (key == 'o') {
+			objmodel.save_obj();
+		}
+		// 根据文档转动振镜
+		else if (key == 'g') {
+			// read cmd
+			ifstream infile;
+			infile.open("data/cmd.txt");
+			char cmd[100];
+			char* p;
+			infile.getline(cmd, 100);
+			if (cmd[0] == 'g' && cmd[1] == ':') {
+				p = strchr(cmd, ':');
+				p++;
+				int x = std::stoi(p);
+				p = strchr(cmd, ',');
+				p++;
+				int y = std::stoi(p);
+				cout << "go: x " << x << " y " << y << endl;
+				zj_ctrl.goto_volt(x, y);
+			}
+		}
+		
+		else if (key == 'h')
+		{
+			is_pid = true;
+			is_pid_y = true;
+		}
+		else if (key == 'H')
+		{
+			is_pid = false;
+			is_pid_y = false;
+		}
+		else if (key == 'u') {
+			objmodel.frame_from_file();
+		}
+		// save volts
+		else if (key == 'l') {
+			objmodel.save_volts();
+		}
+		else if (key == 'j') {
+			ct.adjust();
+		}
+}
 }
