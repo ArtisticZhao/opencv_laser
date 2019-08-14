@@ -41,7 +41,7 @@ Mat moveLightDiff(Mat src, int radius) {
 
 int main(void)
 {
-	Mat src = imread("e:/1.bmp");
+	Mat src = imread("e:/1.png");
 	Mat src_hsv;
 	Mat bin;
 	Mat src_h;

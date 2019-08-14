@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	ShowHelpText();
 
 	//载入原图
-	g_srcImage = imread("E:/1.bmp");
+	g_srcImage = imread("E:/j.bmp");
 	if (!g_srcImage.data) { printf("Oh，no，读取srcImage错误~！ \n"); return false; }
 
 	//显示原始图

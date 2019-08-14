@@ -80,12 +80,15 @@ void Contest::show_all()
 		cout << "---------------" << endl;
 		bool res = measure_lazer();
 		int key = 0;
-		while(key != 'v')
+		measure_lazer();
+		measure_lazer();
+		process_key('v');
+		/*while(key != 'v')
 		{
 			measure_lazer();
 			key = cv::waitKey(1);
 			process_key(key);
-		}
+		}*/
 	}
 }
 
