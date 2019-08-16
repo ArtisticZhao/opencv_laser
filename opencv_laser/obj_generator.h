@@ -31,6 +31,7 @@ private:
 	vector<Vector2i> volts;
 	
 public:
+	Vector3d get_old_point(int index);
 	void add_point(Vector3d new_point, Vector2d new_uv, Vector2i volt);
 	void add_old_point(int index);
 	void create_new_frame();

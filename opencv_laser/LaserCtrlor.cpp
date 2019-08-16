@@ -5,7 +5,7 @@ using namespace std;
 LaserCtrlor::LaserCtrlor(CSerialPort* com)
 {
 	this->comport = com;
-	duty = 3.7;
+	duty = 0.5;
 	this->laser_PWM();
 }
 void LaserCtrlor::setduty(int key)

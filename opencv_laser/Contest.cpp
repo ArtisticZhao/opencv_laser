@@ -56,14 +56,14 @@ void Contest::read_uvs()
 
 void Contest::goal_target(int x, int y, int volt_x, int volt_y)
 {
-	srand((unsigned)time(NULL));
+	/*srand((unsigned)time(NULL));
 	int times =  (rand() % (0 - 2 + 0)) + 2;
 	for (int i = 0; i < times; i++) {
 		bool has_point = measure_lazer();
 		zjp->set_target(x, y);
 		zjp->goal_target(point_x, point_y, true, true, has_point);
 	}
-	measure_lazer();
+	measure_lazer()*/;
 	zjp->goto_volt(volt_x, volt_y);
 	measure_lazer();
 }
@@ -82,13 +82,16 @@ void Contest::show_all()
 		int key = 0;
 		measure_lazer();
 		measure_lazer();
-		process_key('v');
-		/*while(key != 'v')
+		// 注释下段代码 则是振镜自动转动 中间自动添加测量点 但是不保证结果 只是演示用
+		// 取消注释代码 振镜自动移动 但是会等待系统输入
+		// process_key('v');
+		
+		while(key != 'v' && key != 'z')
 		{
 			measure_lazer();
 			key = cv::waitKey(1);
 			process_key(key);
-		}*/
+		}
 	}
 }
 

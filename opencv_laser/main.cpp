@@ -1,5 +1,6 @@
 #define CAMERA 0
 #define ZHENJINGCOM 5
+#define TURNTABLECOM 36
 #define DELAY 150
 
 #define CHAFEN
@@ -14,6 +15,7 @@
 #include "pid.h"
 #include "LaserCtrlor.h"
 #include "zhenjing_control.h"
+#include "TurntableCtrl.h"
 #include "my_point_detector.h"
 #include "triangle_cxf.h"
 #include "vector2.h"
@@ -30,6 +32,7 @@ using namespace std;
 int width = 0;
 int height = 0;
 ZhenjingControlor zj_ctrl(ZHENJINGCOM);
+TurntableCtrl tb_ctrl(TURNTABLECOM);
 LaserCtrlor lz_ctrl(zj_ctrl.get_serial_port());
 // obj存储类
 OBJ_Model objmodel;
@@ -265,7 +268,8 @@ bool measure_lazer() {
 		//cout << points[0].x - width / 2 << " " << points[0].y - height / 2 << endl;
 		// calc xyz
 		//zj_ctrl.goal_target(points[0].x, points[0].y);
-		zmeasure(points[0].x - width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1139.175, d3, 3);
+		zmeasure(points[0].x - width / 2, (points[0].y - height / 2), zj_ctrl.get_angle_x(), zj_ctrl.get_angle_y(), 21, 1139.175, d3, 3, tb_ctrl.get_angle());
+		
 		uv[0] = points[0].x / width;
 		uv[1] = points[0].y / height;
 		point_x = points[0].x;
@@ -283,22 +287,37 @@ bool measure_lazer() {
 void process_key(int key) {
 	if (key != -1) {
 		zj_ctrl.zhenjing_control(key); // 1 2 3 4 5 w a s d
+		tb_ctrl.key_to_turn(key);  // 6 7 8 9 0
 		lz_ctrl.setduty(key);  // q e 改变大小
 		if (key == 'y') {
 			ct.show_all();
 		}
 		// 拍照片
 		else if (key == 'p') {
-			// take photo
-			Mat flip_frame;
-			flip(frame_dark, flip_frame, 0);
-			imwrite("data/1.png", flip_frame);
+			// take photo ,需要在三个角度照照片
+			lz_ctrl.laser_off();
+			Mat flip_frame1, flip_frame2, flip_frame3, flip_frame4;
+			flip(frame_dark, flip_frame1, 0); // 翻转图片
+			tb_ctrl.turn_to_deg(-90);
+			capture >> flip_frame2;
+			flip(flip_frame2, flip_frame2, 0); // 翻转图片
+			tb_ctrl.turn_to_deg(-180);
+			capture >> flip_frame3;
+			flip(flip_frame3, flip_frame3, 0); // 翻转图片
+			tb_ctrl.turn_to_deg(-270);
+			capture >> flip_frame4;
+			flip(flip_frame4, flip_frame4, 0); // 翻转图片
+			hconcat(flip_frame1, flip_frame2, flip_frame1);  // 水平拼接 处理x坐标
+			hconcat(flip_frame1, flip_frame3, flip_frame1);
+			hconcat(flip_frame1, flip_frame4, flip_frame1);
+			imwrite("data/1.png", flip_frame1);
 			std::cout << "[INFO] image saved!" << std::endl;
 		}
 		// 添加新点
 		else if (key == 'v') {
 			Vector3d point(d3[0], d3[1], d3[2]);
-			Vector2d v_uv(uv[0], uv[1]);
+			int div = tb_ctrl.get_angle() / -90;
+			Vector2d v_uv(uv[0] / 4 + div*0.25, uv[1]);  // 根据当前角度确定纹理的位置
 			Vector2i volts(zj_ctrl.get_x(), zj_ctrl.get_y());
 			objmodel.add_point(point, v_uv, volts);
 		}
@@ -316,6 +335,17 @@ void process_key(int key) {
 			cout << "输入index:";
 			cin >> index;
 			objmodel.add_old_point(index);
+		}
+		// 用新的UV添加旧点
+		else if (key == 'z') {
+			// re add
+			int index = 0;
+			cout << "输入index:";
+			cin >> index;
+			int div = tb_ctrl.get_angle() / -90;
+			Vector2d v_uv(uv[0] / 4 + div * 0.25, uv[1]);  // 根据当前角度确定纹理的位置
+			Vector2i volts(zj_ctrl.get_x(), zj_ctrl.get_y());
+			objmodel.add_point(objmodel.get_old_point(index), v_uv, volts);
 		}
 		else if (key == 'x')
 		{

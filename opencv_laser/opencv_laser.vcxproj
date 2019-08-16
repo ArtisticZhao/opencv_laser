@@ -138,6 +138,7 @@
     <ClInclude Include="point_detector.h" />
     <ClInclude Include="triangle.h" />
     <ClInclude Include="triangle_cxf.h" />
+    <ClInclude Include="TurntableCtrl.h" />
     <ClInclude Include="vector2.h" />
     <ClInclude Include="zhenjing_control.h" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClCompile Include="point_detector.cpp" />
     <ClCompile Include="triangle.cpp" />
     <ClCompile Include="triangle_cxf.cpp" />
+    <ClCompile Include="TurntableCtrl.cpp" />
     <ClCompile Include="vector2.cpp" />
     <ClCompile Include="zhenjing_control.cpp" />
   </ItemGroup>

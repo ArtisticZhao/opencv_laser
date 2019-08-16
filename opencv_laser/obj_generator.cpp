@@ -5,6 +5,11 @@
 #include <fstream>
 
 
+Vector3d OBJ_Model::get_old_point(int index)
+{
+	return this->points.at(index);
+}
+
 void OBJ_Model::add_point(Vector3d new_point, Vector2d new_uv, Vector2i volt)
 {
 	this->points.push_back(new_point);
@@ -204,6 +209,6 @@ void OBJ_Model::delete_point()
 	this->uvs.pop_back();
 	this->volts.pop_back();
 	this->current_frame_index.pop_back();
-	cout << "[INFO]delete a point: " << this->points.size() + 1 << endl;
+	cout << "[INFO]delete a point: " << this->points.size() << endl;
 }
 
