@@ -187,6 +187,7 @@ void OBJ_Model::frame_from_file()
 		this->create_new_frame();
 	}
 	this->save_obj();
+	frame_file.close();
 }
 
 void OBJ_Model::save_volts()
