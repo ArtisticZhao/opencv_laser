@@ -178,6 +178,12 @@ void ZhenjingControlor::show_volts()
 	cout << "Volt: x: " << this->ADC_DV_X << " y: " << this->ADC_DV_Y << endl;
 }
 
+void ZhenjingControlor::scan_on()
+{
+	unsigned char temp[5] = { 0xc0, 0xdc, 0xdc, 0xdc,0xdc };
+	this->comport.WriteData(temp, 5);
+}
+
 CSerialPort* ZhenjingControlor::get_serial_port()
 {
 	return &this->comport;

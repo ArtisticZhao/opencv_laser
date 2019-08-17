@@ -399,5 +399,11 @@ void process_key(int key) {
 		else if (key == 'j') {
 			ct.adjust();
 		}
+		else if (key == 'J') {
+			lz_ctrl.laser_on();
+			zj_ctrl.goto_volt(0, 32000);
+			zj_ctrl.scan_on();
+			waitKey();
+		}
 }
 }
