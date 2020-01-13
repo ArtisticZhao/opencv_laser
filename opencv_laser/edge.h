@@ -2,7 +2,7 @@
 #define H_EDGE
 
 #include "vector2.h"
-
+// test
 struct Edge
 {
 	using VertexType = Vector2;
